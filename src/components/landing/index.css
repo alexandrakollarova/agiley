@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap');
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  letter-spacing: 1px;
+}
+
+/* LINK, BUTTON, UL, LI */
+
+a {
+  text-decoration: none;
+  color: inherit
+}
+
+.landing-nav-li:hover {
+  border-bottom: 3px solid #FF911E;
+  text-decoration: none;
+}
+
+ul, li {
+  list-style: none;
+  padding-left: 0;
+}
+
+nav {
+  margin: 10px;
+  color: #282EBA;
+  height: 20px;
+  font-weight: 600;
+}
+
+.logo {
+  float: left;
+  padding-left: 5px;
+}
+
+button {
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+}
+
+.btn {
+  border-radius: 30px;
+  padding: 10px 15px;
+  background-color: #FEBB46;
+  color: white;
+  font-weight: 600;
+}
+
+/*  BACKGROUND IMG  */
+.scrum-board {
+  width: 320px;
+}
+
+.scrum-board-wrapper {
+  clear: both;
+}
+
+footer {
+  position: fixed;
+  bottom: -50px;
+  height: 250px;
+  left: 0;
+  right: 0;
+  background-color: rgba(103,116,255, 0.7);
+  border-top-right-radius: 50px;
+  border-top-left-radius: 50px;
+  z-index: -1;
+}
+
+.footer-wrapper {
+  position: fixed;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+}
+
+.footer-wrapper h3 {
+  color: white;
+  margin-top: 30px;
+  margin-bottom: 10px
+}
+
+.landing-nav-li {
+  float: right;
+}
+
+.demo {
+  margin-right: 10px
+}
+
+.landing-main-inner-wrapper {
+  position: absolute;
+  top: 280px;
+  left: 0;
+  right: 0;
+}
+
+.landing-main-inner-wrapper .headline {  
+  color: #282EBA;
+}
+
+@media screen and (min-width: 375px) {
+
+  .scrum-board {
+    width: 350px;
+  }
+}
+
+
+@media screen and (min-width: 600px) {
+  
+  .landing-main-inner-wrapper .headline {
+    font-size: 40px;
+  }
+
+  .landing-main-inner-wrapper h3 {
+    font-size: 25px;
+  }
+
+  .scrum-board {
+    width: 380px;
+  }
+
+}
+
+@media screen and (min-width: 800px) {
+
+  .scrum-board {
+    width: 420px;
+  }
+
+  .headline-img-wrapper {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .landing-main-inner-wrapper {
+    text-align: left;
+    top: 100px;
+    left: 100px;
+  }
+
+  .landing-main-inner-wrapper .headline {
+    font-size: 45px;
+  }
+
+  .scrum-board-wrapper {
+    float: right;
+    margin-top: 150px
+  }
+
+  footer {
+    left: 150px;
+    right: 150px;
+  }
+
+  nav {
+    margin-left: 150px;
+    margin-right: 150px;
+  }
+
+}
+
+@media screen and (min-width: 900px) {
+
+  .landing-main-inner-wrapper .headline {
+    font-size: 55px;
+  }
+
+}
+
+@media screen and (min-width: 1000px) {
+
+  .scrum-board {
+    width: 500px;
+  }
+
+  .scrum-board-wrapper {
+    margin-top: 100px;
+  }
+
+  .landing-main-inner-wrapper {
+    left: 150px;
+  }
+
+  .headline-img-wrapper {
+    width: 800px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+
+  .scrum-board {
+    width: 600px;
+  }
+
+  .scrum-board-wrapper {
+    margin-top: 0;
+  }
+
+  .landing-main-inner-wrapper .headline {
+    font-size: 60px;
+  }
+
+  .landing-main-inner-wrapper {
+    left: 200px;
+  }
+
+  .headline-img-wrapper {
+    width: 1000px;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+
+  .landing-main-inner-wrapper {
+    left: 300px;
+  }
+}

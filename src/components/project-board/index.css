@@ -1,0 +1,205 @@
+
+.project-item-main {
+  display: flex;
+  justify-content: space-around;
+}
+
+.project-item-main h3 {
+  background-color: #FF911E;
+  color: white;
+  border-radius: 10px;
+  padding: 8px;
+  margin: 10px;
+}
+
+/* background board */
+.react-trello-board {
+  background-color: rgba(103,116,255, 0.7)!important;
+  border-radius: 10px;
+}
+
+/* FORMS */
+
+.add-card-form {
+  text-align: left;
+}
+
+.add-card-form input, .add-project-form input {
+  width: 120px;
+  border: none;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: inherit;
+  font-size: 1.17em;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.add-project-form input {
+  width: 200px;
+}
+
+.add-card-form input {
+  font-size: 16px;;
+}
+
+.add-project-form input::placeholder {
+  color: #FF911E;
+}
+
+.comPlainTextContentEditable--has-placeholder {
+  font-size: 10px;
+}
+
+/* button Cancel */
+.react-trello-lane button {
+  background: inherit;
+  color: #999999;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  float: right;
+  outline: none;
+  margin-top: 5px;
+  margin-right: 2px;
+}
+
+/* button Add card */
+.react-trello-lane button:nth-child(2) {
+  color: #FF911E;
+  background-color: inherit;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  float: left;
+  padding-left: 10px
+}
+
+.react-trello-lane div > div:last-child {
+  background-color: inherit;
+}
+
+/* button Click to add card */
+.react-trello-lane a:hover {
+  text-decoration: none;
+}
+
+/* description */
+.react-trello-card div:nth-child(2) {
+  font-size: 10px;
+  padding-top: 5px;
+}
+
+/* background form for adding a card */
+.react-trello-lane article {
+  border-radius: 10px;
+  border-bottom: none;
+}
+
+.comPlainTextContentEditable {
+  outline: none;
+}
+
+/* font color Click to add card */
+.react-trello-lane a {
+  color: #FF911E!important;
+  font-weight: 600;
+}
+
+/* background list */
+.react-trello-lane {
+  background-image: linear-gradient(white, #DFDFDF);
+  text-align: left;
+  border-radius: 10px!important;
+  margin: 20px!important;
+}
+
+/* background card */
+.react-trello-card header {
+  border: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.react-trello-card {
+  border-radius: 10px;
+  border: none;
+}
+
+/* background list title */
+.react-trello-lane > header:first-child {
+  background-color: #FF911E;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  color: white;
+}
+
+.react-trello-lane > header:first-child span {
+  font-size: 20px;
+}
+
+/*  images */
+.scrum-board2 {
+  width: 100%
+}
+
+.scrum-board2-wrapper {
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  padding-top: 30px
+}
+
+.react-trello-board {
+  height: 80vh!important;
+}
+
+
+@media screen and (min-width: 500px) {
+
+  .scrum-board2-wrapper {
+    bottom: 0;
+  }
+ 
+  .project-list-main, .project-list-title h2, .project-item-title h2 {
+    width: 450px;
+  }
+
+  .smooth-dnd-container.horizontal {
+    white-space: nowrap;
+}
+}
+
+
+@media screen and (min-width: 800px) {
+
+  .project-list-main, .project-list-title h2, .project-item-title h2  {
+    width: 750px;
+    box-shadow: 0 100px 80px rgba(0, 0, 0, 0.12);
+  }
+
+  .smooth-dnd-container.horizontal {
+    white-space: unset;
+  }
+}
+
+@media screen and (min-width: 850px) {
+
+  .project-item-title h2  {
+    width: 920px;
+  }
+
+}
+
+@media screen and (min-width: 1000px) {
+
+  .scrum-board2 {
+    width: 1200px;
+  }
+}
