@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap');
-
 body {
   box-sizing: border-box;
   margin: 0;
@@ -18,9 +16,3 @@ ul, li {
   padding-left: 0;
 }
 
-nav {
-  margin: 10px;
-  color: #282EBA;
-  height: 20px;
-  font-weight: 600;
-}
