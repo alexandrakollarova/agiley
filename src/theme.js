@@ -18,6 +18,42 @@ const nunito = {
 let theme = createMuiTheme({
   typography: {
     fontFamily: ['Nunito, sans-serif'].join(','),
+    h1: {
+      color: '#707070'
+    },
+    h2: {
+      color: '#707070'
+    },
+    h3: {
+      color: '#707070'
+    },
+    h4: {
+      color: '#707070'
+    },
+    h5: {
+      color: '#707070'
+    },
+    h6: {
+      color: '#707070'
+    },
+    subtitle1: {
+      color: '#707070'
+    },
+    body1: {
+      color: '#707070'
+    },
+    subtitle2: {
+      color: '#707070'
+    },
+    body2: {
+      color: '#707070'
+    },
+    overline: {
+      color: '#707070'
+    },
+    button: {
+      color: '#707070'
+    }
   },
   overrides: {
     MuiCssBaseline: {
@@ -49,8 +85,11 @@ let theme = createMuiTheme({
     purple: {
       main: 'rgba(103, 116, 255, 0.7)'
     },
-    greyish: {
-      main: 'rgba(227, 227, 227, 0.8)'
+    greyGradient: {
+      main: 'linear-gradient(to bottom right, white, rgba(227, 227, 227, 0.8))'
+    },
+    gradient: {
+      main: '-webkit-linear-gradient(#FEBB46, #282EBA, rgba(103, 116, 255, 0.7))'
     }
   }
 })

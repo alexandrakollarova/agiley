@@ -4,25 +4,19 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {
   makeStyles,
-  Grid,
+  List,
+  ListItem,
   Card,
-  Container,
-  CircularProgress,
   Typography,
-  Box,
   InputBase
 } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   card: {
     textAlign: 'left',
-    background: theme.palette.greyish.main,
+    background: theme.palette.greyGradient.main,
     borderRadius: 10,
-    padding: theme.spacing(2),
-    height: 'auto',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    boxShadow: 'none'
+    boxShadow: '0 100px 80px rgba(0, 0, 0, 0.12)'
   },
   list: {
     borderRadius: 10,
@@ -42,7 +36,12 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 10,
     //background: 'inherit',
     fontWeight: 700,
-    outline: 'none'
+    outline: 'none',
+    marginLeft: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  },
+  link: {
+    width: '100%'
   }
 }))
 
@@ -93,22 +92,24 @@ export default function ProjectsCard() {
 
   return (
     <Card className={classes.card}>
-      <ul className={classes.list}>
+      <List className={classes.list}>
         {
           data.projects.map(({ id, title }) => {
             return (
-              <li key={id}>
-                <Link to={{
-                  pathname: `/dashboard/${id}`,
-                  state: { id, title }
-                }}>
+              <ListItem key={id} className={classes.listItem}>
+                <Link
+                  className={classes.link}
+                  to={{
+                    pathname: `/dashboard/${id}`,
+                    state: { id, title }
+                  }}>
                   <Typography variant="h6" className={classes.h6}>{title}</Typography>
                 </Link>
-              </li>
+              </ListItem>
             )
           })
         }
-      </ul>
+      </List>
 
       <div>
         <form onSubmit={handleSubmit}>
