@@ -9,13 +9,13 @@ import './index.css'
 const GET_PROJECT = gql`
 query Project($type: ID!) {
   project(id: $type) {
-    title,
+    title
     lists {
       id
-      title,
+      title
       cards {
         id
-        title,
+        title
         content
       }
     }

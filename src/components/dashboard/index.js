@@ -26,10 +26,13 @@ const useStyles = makeStyles(theme => ({
 const GET_LISTS = gql`
     {
       projects {
-        title,
+        id
+        title
         lists {
-          title,
+          id
+          title
           cards {
+            id
             title
           }
         }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -57,8 +57,8 @@ const GET_PROJECTS = gql`
 const ADD_PROJECT = gql`
     mutation AddProject($type: String!) {
       addProject(title: $type) {
-        id,
-        title
+        success,
+        message
       }
     }
   `
@@ -66,14 +66,15 @@ const ADD_PROJECT = gql`
 export default function ProjectsCard() {
   const classes = useStyles()
   let input
+  const [title, setTitle] = useState('')
   const { loading, error, data } = useQuery(GET_PROJECTS)
   const [addProject] = useMutation(
     ADD_PROJECT,
     {
       update(cache, { data: { addProject } }) {
-        const { projects } = cache.readQuery({ query: GET_PROJECTS });
+        const projects = cache.readQuery({ GET_PROJECTS });
         cache.writeQuery({
-          query: GET_PROJECTS,
+          GET_PROJECTS,
           data: { projects: projects.concat([addProject]) }
         })
       }
@@ -84,8 +85,9 @@ export default function ProjectsCard() {
   if (error) return `Error! ${error.message}`
 
   function handleSubmit(e) {
-    e.preventDefault()
-    let title = e.target.title.value
+    // e.preventDefault()
+    // setTitle(e.target.value)
+    //let title = e.target.title.value
     addProject({ variables: { type: title } })
     input.value = ''
   }
@@ -116,10 +118,9 @@ export default function ProjectsCard() {
           <InputBase
             className={classes.input}
             placeholder='Create a project..'
-            //inputProps={{ 'aria-label': 'naked' }}
-            ref={node => {
-              input = node;
-            }}
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            ref={node => input = node}
           />
         </form>
       </div>
