@@ -56,7 +56,7 @@ const GET_SECTIONS_BY_ID = gql`
 `
 
 
-const SECTION_SUBSCRIPTION = gql`
+const SECTION_ADDED = gql`
   subscription {
     sectionAdded {
       id
@@ -70,18 +70,6 @@ const SECTION_SUBSCRIPTION = gql`
         label
         pos
         description
-      }
-    }
-  }
-`
-
-const ADD_SECTION_TO_PROJECT = gql`
-  mutation AddSectionToProject($id: ID!, $title: String!, $label: String!, $pos: Int!) {
-    addSectionToProject(request: { id: $id, title: $title, label: $label, pos: $pos }) {
-      id
-      title
-      sections {
-        id
       }
     }
   }
@@ -122,22 +110,24 @@ export default function Project() {
   const projectTitle = location.state.title
 
   const [isAddSectionInputActive, setAddSectionInputActive] = useState(false)
-  const [addSectionInpuText, setAddSectionInputText] = useState('')
+  const [addSectionInputText, setAddSectionInputText] = useState('')
   const [sections, setSections] = useState([])
 
+  // QUERIES
   const GetProjectById = useQuery(GET_PROJECT_BY_ID, {
     variables: {
       id: projectId
     }
   })
-
   const [GetSectionsById, { data }] = useLazyQuery(GET_SECTIONS_BY_ID)
 
+  // MUTATIONS
   const [AddSection, { insertSection }] = useMutation(ADD_SECTION)
-
-  const [AddSectionToProject, { insertSectionToProject }] = useMutation(ADD_SECTION_TO_PROJECT)
-
   const [updateSectionPos] = useMutation(UPDATE_SECTION_POS)
+
+  // SUBSCRIPTIONS
+  const { data: { sectionAdded } = {} } = useSubscription(SECTION_ADDED)
+  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGES)
 
   useEffect(() => {
     if (!GetProjectById.loading && GetProjectById.data !== '') {
@@ -151,13 +141,8 @@ export default function Project() {
     }
   }, [GetProjectById, GetSectionsById, data])
 
-  const { data: { sectionAdded } = {} } = useSubscription(SECTION_SUBSCRIPTION)
-
-  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGES)
-
   useEffect(() => {
     if (onSectionPosChange) {
-      console.log("onSectionPosChange", onSectionPosChange)
       let newSections = sections
 
       newSections = newSections.map(section => {
@@ -180,6 +165,7 @@ export default function Project() {
   useEffect(() => {
     if (sectionAdded) {
       setSections(sections.concat(sectionAdded))
+      setAddSectionInputActive(false)
     }
   }, [sectionAdded])
 
@@ -214,30 +200,20 @@ export default function Project() {
     }
   }
 
-  function onAddSectionSubmit() {
-    if (addSectionInpuText) {
+  function onAddSectionSubmit(e) {
+    e.preventDefault()
+    if (addSectionInputText) {
       AddSection({
         variables: {
           id: projectId,
-          title: addSectionInpuText,
-          label: addSectionInpuText,
+          title: addSectionInputText,
+          label: addSectionInputText,
           pos:
             sections && sections.length > 0
               ? sections[sections.length - 1].pos + 16384
               : 16384
         }
       })
-      // AddSectionToProject({
-      //   variables: {
-      //     id: projectId,
-      //     title: addSectionInpuText,
-      //     label: addSectionInpuText,
-      //     pos:
-      //       sections && sections.length > 0
-      //         ? sections[sections.length - 1].pos + 16384
-      //         : 16384
-      //   }
-      // })
     }
   }
 

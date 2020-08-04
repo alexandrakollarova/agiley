@@ -54,7 +54,7 @@ const GET_PROJECTS = gql`
   }
 `
 
-const PROJECT_SUBSCRIPTION = gql`
+const PROJECT_ADDED = gql`
   subscription {
     projectAdded {
       id
@@ -74,10 +74,18 @@ const ADD_PROJECT = gql`
 
 export default function ProjectsCard() {
   const classes = useStyles()
+
   const [addProjectInputText, setAddProjectInputText] = useState('')
   const [projects, setProjects] = useState([])
-  const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
+
+  // QUERIES
   const { loading, error, data } = useQuery(GET_PROJECTS)
+
+  // MUTATIONS
+  const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
+
+  // SUBSCRPTIONS
+  const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
 
   useEffect(() => {
     if (data) {
@@ -85,21 +93,22 @@ export default function ProjectsCard() {
     }
   }, [data])
 
-  const { data: { projectAdded } = {} } = useSubscription(PROJECT_SUBSCRIPTION)
-
   useEffect(() => {
     if (projectAdded) {
       setProjects(projects.concat(projectAdded))
     }
-  }, [projectAdded, projects])
+  }, [projectAdded])
 
-  const onAddProjectSubmit = () => {
+  const onAddProjectSubmit = (e) => {
+    e.preventDefault()
+
     if (addProjectInputText) {
       AddProject({
         variables: {
           title: addProjectInputText
         }
       })
+      setAddProjectInputText('')
     }
   }
 
@@ -107,7 +116,7 @@ export default function ProjectsCard() {
     <Card className={classes.card}>
       <List className={classes.list}>
         {
-          data && data.getProjects.map(({ id, title }) => {
+          projects.map(({ id, title }) => {
             return (
               <ListItem key={id} className={classes.listItem}>
                 <Link
@@ -130,6 +139,7 @@ export default function ProjectsCard() {
             className={classes.input}
             placeholder='Create a project...'
             onChange={e => setAddProjectInputText(e.target.value)}
+            value={addProjectInputText}
           />
         </form>
       </div>

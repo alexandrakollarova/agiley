@@ -25,6 +25,10 @@
     "semi": [
       "warn",
       "never"
+    ],
+    "quotes": [
+      "warn",
+      "single"
     ]
   }
 }

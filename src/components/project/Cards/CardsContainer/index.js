@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react"
-import Card from "../Card"
-import { Container, Draggable } from "react-smooth-dnd"
-import { IoIosAdd } from "react-icons/io"
-import { useMutation, useSubscription } from "@apollo/react-hooks"
-import gql from "graphql-tag"
-import PosCalculation from "../../../../utils/pos_calculation"
-import sortBy from "lodash/sortBy"
+import React, { useEffect, useState } from 'react'
+import Card from '../Card'
+import { Container, Draggable } from 'react-smooth-dnd'
+import { IoIosAdd } from 'react-icons/io'
+import { useMutation, useSubscription } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import PosCalculation from '../../../../utils/pos_calculation'
+import sortBy from 'lodash/sortBy'
 
 import {
   Wrapper,
@@ -22,7 +22,7 @@ import {
   SubmitCardButtonDiv,
   SubmitCardButton,
   SubmitCardIcon,
-} from "./index-styles"
+} from './index-styles'
 
 const ADD_CARD = gql`
   mutation InsertCard(
@@ -46,7 +46,7 @@ const ADD_CARD = gql`
   }
 `
 
-const onCardAdded = gql`
+const CARD_ADDED = gql`
   subscription {
     cardAdded {
       id
@@ -87,14 +87,14 @@ const ON_CARD_UPDATE_SUBSCRIPTION = gql`
 const CardContainer = ({ item, sections }) => {
   const [cards, setCards] = useState([])
   const [isTempCardActive, setTempCardActive] = useState(false)
-  const [cardText, setCardText] = useState("")
+  const [cardText, setCardText] = useState('')
 
+  // MUTATIONS
   const [insertCard, { data }] = useMutation(ADD_CARD)
-
   const [updateCardPos] = useMutation(UPDATE_CARD)
 
-  const { data: { cardAdded } = {} } = useSubscription(onCardAdded)
-
+  // SUBSCRIPTIONS
+  const { data: { cardAdded } = {} } = useSubscription(CARD_ADDED)
   const { data: { onCardPosChange } = {} } = useSubscription(
     ON_CARD_UPDATE_SUBSCRIPTION
   )
@@ -117,9 +117,22 @@ const CardContainer = ({ item, sections }) => {
 
   useEffect(() => {
     if (onCardPosChange) {
-      if (item.id === onCardPosChange.sectionId) {
-        //subscription logic comes here
-      }
+      let newCards = cards
+
+      newCards = newCards.map(card => {
+        if (card.id === onCardPosChange.id) {
+          console.log('card pos', card.pos)
+          return { ...card, pos: onCardPosChange.pos }
+        } else {
+          return card
+        }
+      })
+      let sortedCards = sortBy(newCards, [
+        (card) => {
+          return card.pos
+        }
+      ])
+      setCards(sortedCards)
     }
   }, [onCardPosChange])
 
@@ -142,7 +155,6 @@ const CardContainer = ({ item, sections }) => {
       })
       newCards = sortBy(newCards, (item) => item.pos)
 
-      console.log("newCards", newCards)
       setCards(newCards)
 
       updateCardPos({
@@ -199,7 +211,6 @@ const CardContainer = ({ item, sections }) => {
   const onAddCardSubmit = (e) => {
     e.preventDefault()
     if (cardText) {
-      console.log("==>", cards[cards.length - 1])
       insertCard({
         variables: {
           sectionId: item.id,
@@ -212,43 +223,40 @@ const CardContainer = ({ item, sections }) => {
         },
       })
 
-      setCardText("")
+      setCardText('')
     }
   }
 
   return (
     <Draggable key={item.id}>
-      <Wrapper className={"card-container"}>
+      <Wrapper className={'card-container'}>
         <WrappedSection>
-          <CardContainerHeader className={"column-drag-handle"}>
+          <CardContainerHeader className={'column-drag-handle'}>
             <ContainerContainerTitle>{item.title}</ContainerContainerTitle>
           </CardContainerHeader>
           <CardsContainer>
             <Container
-              orientation={"vertical"}
+              orientation={'vertical'}
               groupName="col"
               // onDragStart={(e) => console.log("Drag Started")}
               // onDragEnd={(e) => console.log("drag end", e)}
               onDrop={(e) => {
-                console.log("card", e)
                 onCardDrop(item.id, e.addedIndex, e.removedIndex, e.payload)
               }}
               dragClass="card-ghost"
               dropClass="card-ghost-drop"
-              onDragEnter={() => {
-                // console.log("drag enter:", item.id);
-              }}
+              // onDragEnter={() => {
+              // }}
               getChildPayload={(index) => {
                 return cards[index]
               }}
-              onDragLeave={() => {
-                // console.log("drag leave:", item.id);
-              }}
+              // onDragLeave={() => {
+              // }}
               // onDropReady={(p) => console.log("Drop ready: ", p)}
               dropPlaceholder={{
                 animationDuration: 150,
                 showOnTop: true,
-                className: "drop-preview",
+                className: 'drop-preview',
               }}
               dropPlaceholderAnimationDuration={200}
             >

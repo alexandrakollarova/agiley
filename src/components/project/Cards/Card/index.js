@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { Container, Draggable } from "react-smooth-dnd"
+import { Draggable } from "react-smooth-dnd"
 
 const CardContainer = styled.div`
   border-radius: 3px;
