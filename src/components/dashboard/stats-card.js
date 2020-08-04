@@ -32,10 +32,10 @@ export default function StatsCard() {
       <div className={classes.buffer}>
         <Typography variant="h2" className={classes.h2}>
           0/2
-      </Typography>
+        </Typography>
         <Typography variant="subtitle1">
-          completed
-      </Typography>
+          completed (hardcoded)
+        </Typography>
       </div>
     </Card>
   )

@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {
   makeStyles,
@@ -46,57 +46,77 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const GET_PROJECTS = gql`
-    {
-      projects {,
-        id,
-        title
-      }
+  query {
+    getProjects {
+      id
+      title
     }
-  `
+  }
+`
+
+const PROJECT_ADDED = gql`
+  subscription {
+    projectAdded {
+      id
+      title
+    }
+  }
+`
 
 const ADD_PROJECT = gql`
-    mutation AddProject($type: String!) {
-      addProject(title: $type) {
-        success,
-        message
-      }
+  mutation AddProject($title: String!) {
+    insertProject(request: { title: $title }) {
+      title
+      id
     }
-  `
+  }
+`
 
 export default function ProjectsCard() {
   const classes = useStyles()
-  let input
-  const [title, setTitle] = useState('')
+
+  const [addProjectInputText, setAddProjectInputText] = useState('')
+  const [projects, setProjects] = useState([])
+
+  // QUERIES
   const { loading, error, data } = useQuery(GET_PROJECTS)
-  const [addProject] = useMutation(
-    ADD_PROJECT,
-    {
-      update(cache, { data: { addProject } }) {
-        const projects = cache.readQuery({ GET_PROJECTS });
-        cache.writeQuery({
-          GET_PROJECTS,
-          data: { projects: projects.concat([addProject]) }
-        })
-      }
+
+  // MUTATIONS
+  const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
+
+  // SUBSCRPTIONS
+  const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
+
+  useEffect(() => {
+    if (data) {
+      setProjects(data.getProjects)
     }
-  )
+  }, [data])
 
-  if (loading) return 'Loading...' // replace with Material UI spinner
-  if (error) return `Error! ${error.message}`
+  useEffect(() => {
+    if (projectAdded) {
+      setProjects(projects.concat(projectAdded))
+    }
+  }, [projectAdded])
 
-  function handleSubmit(e) {
-    // e.preventDefault()
-    // setTitle(e.target.value)
-    //let title = e.target.title.value
-    addProject({ variables: { type: title } })
-    input.value = ''
+  const onAddProjectSubmit = (e) => {
+    e.preventDefault()
+
+    if (addProjectInputText) {
+      AddProject({
+        variables: {
+          title: addProjectInputText
+        }
+      })
+      setAddProjectInputText('')
+    }
   }
 
   return (
     <Card className={classes.card}>
       <List className={classes.list}>
         {
-          data.projects.map(({ id, title }) => {
+          projects.map(({ id, title }) => {
             return (
               <ListItem key={id} className={classes.listItem}>
                 <Link
@@ -114,13 +134,12 @@ export default function ProjectsCard() {
       </List>
 
       <div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onAddProjectSubmit}>
           <InputBase
             className={classes.input}
-            placeholder='Create a project..'
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            ref={node => input = node}
+            placeholder='Create a project...'
+            onChange={e => setAddProjectInputText(e.target.value)}
+            value={addProjectInputText}
           />
         </form>
       </div>
