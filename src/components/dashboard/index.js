@@ -23,26 +23,29 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const GET_LISTS = gql`
-    {
-      projects {
+const GET_SECTIONS = gql`
+  query {
+    getSections {
+      id
+      title
+      label
+      pos
+      description
+      cards {
         id
         title
-        lists {
-          id
-          title
-          cards {
-            id
-            title
-          }
-        }
+        label
+        description
+        pos
       }
     }
-  `
+  }
+`
 
 export default function Dashboard() {
   const classes = useStyles()
-  const { loading, error, data } = useQuery(GET_LISTS)
+
+  const { loading, error, data } = useQuery(GET_SECTIONS)
 
   if (loading) return 'Loading...' // replace with Material UI spinner
   if (error) return `Error! ${error.message}`
@@ -52,20 +55,17 @@ export default function Dashboard() {
     let sumInProgress = 0
     let sumDone = 0
 
-    const projectLists = data.projects.map(project => project.lists)
+    data.getSections.map(section => {
+      if (section.label === 'todo') {
+        sumTodo = sumTodo + section.cards.length
+      }
+      else if (section.label === 'in progress') {
+        sumInProgress = sumInProgress + section.cards.length
+      }
+      else if (section.label === 'done') {
+        sumDone = sumDone + section.cards.length
+      }
 
-    projectLists.map(lists => {
-      return lists.map(list => {
-        if (list.title === 'Todo') {
-          sumTodo = sumTodo + list.cards.length
-        }
-        else if (list.title === 'In-progress') {
-          sumInProgress = sumInProgress + list.cards.length
-        }
-        else if (list.title === 'Done') {
-          sumDone = sumDone + list.cards.length
-        }
-      })
     })
 
     let total = sumTodo + sumInProgress + sumDone
@@ -91,7 +91,7 @@ export default function Dashboard() {
             <ProgressCard progress={getOverallProgress()} />
           </Grid>
           <Grid item xs={8}>
-            <GraphCard projects={data.projects} />
+            {/* <GraphCard projects={data.projects} /> */}
           </Grid>
           <Grid item xs={4}>
             <ProjectsCard />
