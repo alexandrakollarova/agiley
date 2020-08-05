@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useSubscription, useLazyQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import { IoIosAdd } from "react-icons/io"
+import { IoIosAdd } from 'react-icons/io'
 import { Container } from 'react-smooth-dnd'
-import CardContainer from "./Cards/CardsContainer"
+import CardContainer from './Cards/CardsContainer'
 import ProjectNav from './project-nav'
 import './index.css'
-import sortBy from "lodash/sortBy"
+import sortBy from 'lodash/sortBy'
 import PosCalculation from '../../utils/pos_calculation'
 import {
   BoardContainer,
@@ -22,7 +22,7 @@ import {
   SubmitCardButtonDiv,
   SubmitCardButton,
   SubmitCardIcon,
-} from "./board.styles"
+} from './board.styles'
 
 const GET_PROJECT_BY_ID = gql`
   query GetProjectById($id: ID!) {
@@ -95,7 +95,7 @@ const UPDATE_SECTION_POS = gql`
   }
 `
 
-const ON_SECTION_POS_CHANGES = gql`
+const ON_SECTION_POS_CHANGE = gql`
   subscription {
     onSectionPosChange {
       id
@@ -127,7 +127,7 @@ export default function Project() {
 
   // SUBSCRIPTIONS
   const { data: { sectionAdded } = {} } = useSubscription(SECTION_ADDED)
-  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGES)
+  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGE)
 
   useEffect(() => {
     if (!GetProjectById.loading && GetProjectById.data !== '') {
@@ -142,6 +142,13 @@ export default function Project() {
   }, [GetProjectById, GetSectionsById, data])
 
   useEffect(() => {
+    if (sectionAdded) {
+      setSections(sections.concat(sectionAdded))
+      setAddSectionInputActive(false)
+    }
+  }, [sectionAdded])
+
+  useEffect(() => {
     if (onSectionPosChange) {
       let newSections = sections
 
@@ -154,28 +161,20 @@ export default function Project() {
       })
 
       let sortedSections = sortBy(newSections, [
-        (section) => {
-          return section.pos
-        }
+        (section) => section.pos
       ])
       setSections(sortedSections)
     }
-  }, [onSectionPosChange, sections])
-
-  useEffect(() => {
-    if (sectionAdded) {
-      setSections(sections.concat(sectionAdded))
-      setAddSectionInputActive(false)
-    }
-  }, [sectionAdded])
+  }, [onSectionPosChange])
 
   function onColumnDrop({ removedIndex, addedIndex, payload }) {
     if (data) {
       let updatePOS = PosCalculation(
         removedIndex,
         addedIndex,
-        data.fetchSections
+        sections
       )
+
       let newSections = sections.map(section => {
         if (section.id === payload.id) {
           return { ...section, pos: updatePOS }
@@ -185,9 +184,7 @@ export default function Project() {
       })
 
       let sortedSections = sortBy(newSections, [
-        (section) => {
-          return section.pos
-        }
+        (section) => section.pos
       ])
 
       updateSectionPos({
@@ -226,11 +223,11 @@ export default function Project() {
       </div>
 
       <Container
-        orientation={"horizontal"}
+        orientation={'horizontal'}
         onDrop={onColumnDrop}
-        onDragStart={() => {
-          console.log("on drag start")
-        }}
+        // onDragStart={() => {
+        //   console.log('on drag start')
+        // }}
         getChildPayload={(index) => {
           return sections[index]
         }}
@@ -238,7 +235,7 @@ export default function Project() {
         dropPlaceholder={{
           animationDuration: 150,
           showOnTop: true,
-          className: "cards-drop-preview",
+          className: 'cards-drop-preview',
         }}
       >
         {sections.length > 0 &&

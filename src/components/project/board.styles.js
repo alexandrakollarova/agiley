@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const BoardContainer = styled.div`
   background-color: rgb(49, 121, 186);
@@ -11,9 +11,9 @@ export const BoardContainer = styled.div`
   position: absolute;
   padding: 5px;
   align-items: flex-start;
-`;
+`
 
-export const CardHorizontalContainer = styled.div``;
+export const CardHorizontalContainer = styled.div``
 
 export const AddSectionDiv = styled.div`
   background-color: rgba(0, 0, 0, 0.08);
@@ -25,26 +25,26 @@ export const AddSectionDiv = styled.div`
   width: 272px;
   transition: background 85ms ease-in, opacity 40ms ease-in,
     border-color 85ms ease-in;
-`;
+`
 
-export const AddSectionForm = styled.form``;
+export const AddSectionForm = styled.form``
 
 export const AddSectionLink = styled.a`
   text-decoration: none;
-`;
+`
 
 export const AddSectionLinkSpan = styled.span`
   color: #172b4d;
-`;
+`
 
 export const HideSectionLinkSpan = styled(AddSectionLinkSpan)`
   color: #fff;
   display: none;
   padding: 6px 8px;
   transition: color 85ms ease-in;
-`;
+`
 
-export const AddSectionLinkIconSpan = styled.span``;
+export const AddSectionLinkIconSpan = styled.span``
 
 export const AddSectionInput = styled.input`
   background: none;
@@ -53,7 +53,7 @@ export const AddSectionInput = styled.input`
   cursor: pointer;
   display: none;
   margin: 0;
-`;
+`
 
 export const ActiveAddSectionInput = styled(AddSectionInput)`
   background: #fff;
@@ -70,11 +70,11 @@ export const ActiveAddSectionInput = styled(AddSectionInput)`
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
-`;
+`
 
 export const SubmitCardButtonDiv = styled.div`
   height: 32px;
-`;
+`
 
 export const SubmitCardButton = styled.input`
   background-color: #5aac44;
@@ -84,10 +84,10 @@ export const SubmitCardButton = styled.input`
   border-radius: 3px;
   height: 100%;
   cursor: pointer;
-`;
+`
 
 export const SubmitCardIcon = styled.a`
   height: 32px;
   line-height: 32px;
   width: 32px;
-`;
+`

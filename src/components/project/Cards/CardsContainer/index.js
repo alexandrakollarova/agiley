@@ -58,7 +58,7 @@ const CARD_ADDED = gql`
   }
 `
 
-const UPDATE_CARD = gql`
+const UPDATE_CARD_POS = gql`
   mutation UpdateCard($cardId: String!, $pos: Int!, $sectionId: String!) {
     updateCardPos(
       request: { cardId: $cardId, pos: $pos, sectionId: $sectionId }
@@ -71,7 +71,7 @@ const UPDATE_CARD = gql`
   }
 `
 
-const ON_CARD_UPDATE_SUBSCRIPTION = gql`
+const ON_CARD_POS_CHANGE = gql`
   subscription {
     onCardPosChange {
       id
@@ -91,13 +91,11 @@ const CardContainer = ({ item, sections }) => {
 
   // MUTATIONS
   const [insertCard, { data }] = useMutation(ADD_CARD)
-  const [updateCardPos] = useMutation(UPDATE_CARD)
+  const [updateCardPos] = useMutation(UPDATE_CARD_POS)
 
   // SUBSCRIPTIONS
   const { data: { cardAdded } = {} } = useSubscription(CARD_ADDED)
-  const { data: { onCardPosChange } = {} } = useSubscription(
-    ON_CARD_UPDATE_SUBSCRIPTION
-  )
+  const { data: { onCardPosChange } = {} } = useSubscription(ON_CARD_POS_CHANGE)
 
   useEffect(() => {
     if (item && item.cards) {
@@ -121,23 +119,27 @@ const CardContainer = ({ item, sections }) => {
 
       newCards = newCards.map(card => {
         if (card.id === onCardPosChange.id) {
-          console.log('card pos', card.pos)
-          return { ...card, pos: onCardPosChange.pos }
+          console.log('current card pos', card.pos)
+          console.log('updated card pos', onCardPosChange.pos)
+          return { ...card, pos: card.pos }
         } else {
           return card
         }
       })
+
+      //console.log('new cards', newCards)
+
       let sortedCards = sortBy(newCards, [
-        (card) => {
-          return card.pos
-        }
+        (card) => card.pos
       ])
+
       setCards(sortedCards)
     }
   }, [onCardPosChange])
 
   const onCardDrop = (columnId, addedIndex, removedIndex, payload) => {
     let updatedPOS
+
     if (addedIndex !== null && removedIndex !== null) {
       let sectionCards = sections.filter((p) => p.id === columnId)[0]
 
@@ -153,21 +155,23 @@ const CardContainer = ({ item, sections }) => {
           return item
         }
       })
-      newCards = sortBy(newCards, (item) => item.pos)
 
-      setCards(newCards)
+      let sortedCards = sortBy(newCards, (item) => item.pos)
+
+      console.log('updated POS', updatedPOS)
 
       updateCardPos({
         variables: {
           cardId: payload.id,
           pos: parseInt(updatedPOS),
           sectionId: columnId,
-        },
+        }
       })
+
+      setCards(sortedCards)
+
     } else if (addedIndex !== null) {
       const newColumn = sections.filter((p) => p.id === columnId)[0]
-      const columnIndex = sections.indexOf(newColumn)
-
       if (addedIndex === 0) {
         updatedPOS = newColumn.cards[0].pos / 2
       } else if (addedIndex === newColumn.cards.length) {
@@ -190,9 +194,7 @@ const CardContainer = ({ item, sections }) => {
         }
       })
 
-      newCards = sortBy(newCards, (item) => item.pos)
-
-      setCards(newCards)
+      let sortedCards = sortBy(newCards, (item) => item.pos)
 
       updateCardPos({
         variables: {
@@ -201,6 +203,7 @@ const CardContainer = ({ item, sections }) => {
           sectionId: columnId,
         },
       })
+      setCards(sortedCards)
     }
   }
 

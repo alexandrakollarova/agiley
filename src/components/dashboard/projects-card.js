@@ -72,6 +72,14 @@ const ADD_PROJECT = gql`
   }
 `
 
+const ADD_INITIAL_SECTIONS = gql`
+  mutation AddInitialSections($id: ID!) {
+    addInitialSections(request: { id: $id }) {
+      id
+    }
+  }
+`
+
 export default function ProjectsCard() {
   const classes = useStyles()
 
@@ -83,6 +91,7 @@ export default function ProjectsCard() {
 
   // MUTATIONS
   const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
+  const [AddInitialSections, { insertSections }] = useMutation(ADD_INITIAL_SECTIONS)
 
   // SUBSCRPTIONS
   const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
@@ -107,6 +116,12 @@ export default function ProjectsCard() {
         variables: {
           title: addProjectInputText
         }
+      }).then(res => {
+        AddInitialSections({
+          variables: {
+            id: res.data.insertProject.id
+          }
+        })
       })
       setAddProjectInputText('')
     }
