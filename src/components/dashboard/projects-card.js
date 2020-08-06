@@ -73,8 +73,8 @@ const ADD_PROJECT = gql`
 `
 
 const ADD_INITIAL_SECTIONS = gql`
-  mutation AddInitialSections($id: ID!) {
-    addInitialSections(request: { id: $id }) {
+  mutation AddInitialSections($projectId: ID!) {
+    addInitialSections(request: { projectId: $projectId }) {
       id
     }
   }
@@ -119,7 +119,7 @@ export default function ProjectsCard() {
       }).then(res => {
         AddInitialSections({
           variables: {
-            id: res.data.insertProject.id
+            projectId: res.data.insertProject.id
           }
         })
       })

@@ -24,21 +24,9 @@ import {
   SubmitCardIcon,
 } from './board.styles'
 
-const GET_PROJECT_BY_ID = gql`
-  query GetProjectById($id: ID!) {
-    getProjectById(id: $id) {
-      id
-      title
-      sections {
-        id
-      }
-    }
-  }
-`
-
-const GET_SECTIONS_BY_ID = gql`
-  query GetSectionsById($ids: [ID]!) {
-    getSectionsById(ids: $ids) {
+const GET_SECTIONS_BY_PROJECT_ID = gql`
+  query getSectionsByProjectId($projectId: ID!) {
+    getSectionsByProjectId(request: { projectId: $projectId}) {
       id
       title
       label
@@ -76,11 +64,10 @@ const SECTION_ADDED = gql`
 `
 
 const ADD_SECTION = gql`
-  mutation AddSection($id: ID!, $title: String!, $label: String!, $pos: Int!) {
-    insertSection(request: { id: $id, title: $title, label: $label, pos: $pos }) {
+  mutation AddSection($title: String!, $label: String!, $pos: Int!, $projectId: ID!) {
+    insertSection(request: { title: $title, label: $label, pos: $pos, projectId: $projectId }) {
       title
       description
-      id
       label
     }
   }
@@ -114,12 +101,9 @@ export default function Project() {
   const [sections, setSections] = useState([])
 
   // QUERIES
-  const GetProjectById = useQuery(GET_PROJECT_BY_ID, {
-    variables: {
-      id: projectId
-    }
+  const { loading, error, data } = useQuery(GET_SECTIONS_BY_PROJECT_ID, {
+    variables: { projectId }
   })
-  const [GetSectionsById, { data }] = useLazyQuery(GET_SECTIONS_BY_ID)
 
   // MUTATIONS
   const [AddSection, { insertSection }] = useMutation(ADD_SECTION)
@@ -130,16 +114,10 @@ export default function Project() {
   const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGE)
 
   useEffect(() => {
-    if (!GetProjectById.loading && GetProjectById.data !== '') {
-      const ids = GetProjectById.data.getProjectById.sections.map(section => section.id)
-
-      GetSectionsById({ variables: { ids } })
-
-      if (data) {
-        setSections(data.getSectionsById)
-      }
+    if (data) {
+      setSections(data.getSectionsByProjectId)
     }
-  }, [GetProjectById, GetSectionsById, data])
+  }, [data])
 
   useEffect(() => {
     if (sectionAdded) {
@@ -199,16 +177,17 @@ export default function Project() {
 
   function onAddSectionSubmit(e) {
     e.preventDefault()
+
     if (addSectionInputText) {
       AddSection({
         variables: {
-          id: projectId,
           title: addSectionInputText,
           label: addSectionInputText,
           pos:
             sections && sections.length > 0
               ? sections[sections.length - 1].pos + 16384
-              : 16384
+              : 16384,
+          projectId: projectId
         }
       })
     }

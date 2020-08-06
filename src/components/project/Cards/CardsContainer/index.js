@@ -105,8 +105,9 @@ const CardContainer = ({ item, sections }) => {
 
   useEffect(() => {
     if (cardAdded) {
+      console.log('cards', cards)
       if (item.id === cardAdded.sectionId) {
-        setCards(item.cards.concat(cardAdded))
+        setCards(cards.concat(cardAdded))
 
         setTempCardActive(false)
       }

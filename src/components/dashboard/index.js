@@ -23,6 +23,15 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const GET_PROJECTS = gql`
+  query {
+    getProjects {
+      id
+      title
+    }
+  }
+`
+
 const GET_SECTIONS = gql`
   query {
     getSections {
@@ -45,17 +54,19 @@ const GET_SECTIONS = gql`
 export default function Dashboard() {
   const classes = useStyles()
 
-  const { loading, error, data } = useQuery(GET_SECTIONS)
+  // QUERIES
+  const { loading: loadingProjects, error: errorProjects, data: dataProjects } = useQuery(GET_PROJECTS)
+  const { loading: loadingSections, error: errorSections, data: dataSections } = useQuery(GET_SECTIONS)
 
-  if (loading) return 'Loading...' // replace with Material UI spinner
-  if (error) return `Error! ${error.message}`
+  if (loadingSections) return 'Loading...' // replace with Material UI spinner
+  if (errorSections) return `Error! ${errorSections.message}`
 
   function getOverallProgress() {
     let sumTodo = 0
     let sumInProgress = 0
     let sumDone = 0
 
-    data.getSections.map(section => {
+    dataSections.getSections.map(section => {
       if (section.label === 'todo') {
         sumTodo = sumTodo + section.cards.length
       }
@@ -65,12 +76,14 @@ export default function Dashboard() {
       else if (section.label === 'done') {
         sumDone = sumDone + section.cards.length
       }
-
     })
 
     let total = sumTodo + sumInProgress + sumDone
-
     return (100 * sumDone) / total
+  }
+
+  function getNumOfCompletedProjects() {
+
   }
 
   return (
@@ -91,7 +104,7 @@ export default function Dashboard() {
             <ProgressCard progress={getOverallProgress()} />
           </Grid>
           <Grid item xs={8}>
-            {/* <GraphCard projects={data.projects} /> */}
+            <GraphCard projects={dataProjects.getProjects} sections={dataSections.getSections} />
           </Grid>
           <Grid item xs={4}>
             <ProjectsCard />

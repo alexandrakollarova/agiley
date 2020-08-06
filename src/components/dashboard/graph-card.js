@@ -75,36 +75,53 @@ const Area = props => (
 
 function GraphCard({
   classes,
-  projects
+  projects,
+  sections
 }) {
   const cardClasses = useStyles()
 
   let data = []
 
-  projects[0].lists.map(list => {
+  sections.map(section => {
     data.push({
-      status: list.title
+      status: section.title
     })
   })
+  console.log(data)
+
+  const testData = [
+    { month: 'Jan', appStore: 101, googlePlay: 13 },
+    { month: 'Feb', appStore: 89, googlePlay: 15 },
+    { month: 'Mar', appStore: 107, googlePlay: 20 },
+    { month: 'Apr', appStore: 113, googlePlay: 17 },
+    { month: 'May', appStore: 105, googlePlay: 21 },
+    { month: 'Jun', appStore: 91, googlePlay: 22 },
+    { month: 'Jul', appStore: 110, googlePlay: 23 },
+    { month: 'Aug', appStore: 111, googlePlay: 25 },
+    { month: 'Sep', appStore: 112, googlePlay: 27 },
+    { month: 'Oct', appStore: 111, googlePlay: 30 },
+    { month: 'Nov', appStore: 120, googlePlay: 35 },
+    { month: 'Dec', appStore: 160, googlePlay: 45 },
+  ]
 
   data.map(key => {
     if (key.status === 'Todo') {
       projects.map(project => {
-        const projectListTodo = project.lists.find(list => list.title === 'Todo')
+        const projectListTodo = sections.find(section => section.title === 'Todo')
         const title = project.title
         key[title] = projectListTodo.cards.length
       })
     }
     else if (key.status === 'In-progress') {
       projects.map(project => {
-        const projectListInProgress = project.lists.find(list => list.title === 'In-progress')
+        const projectListInProgress = sections.find(section => section.title === 'In-progress')
         const title = project.title
         key[title] = projectListInProgress.cards.length
       })
     }
     else if (key.status === 'Done') {
       projects.map(project => {
-        const projectListDone = project.lists.find(list => list.title === 'Done')
+        const projectListDone = sections.find(section => section.title === 'Done')
         const title = project.title
         key[title] = projectListDone.cards.length
       })
