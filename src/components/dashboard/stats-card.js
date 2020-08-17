@@ -12,29 +12,37 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 10,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    background: theme.palette.greyGradient.main
   },
   buffer: {
-    padding: theme.spacing(3)
+    textAlign: 'center'
   },
   h2: {
-    background: theme.palette.gradient.main,
+    background: theme.palette.blueGradient.main,
     '-webkit-background-clip': 'text',
     '-webkit-text-fill-color': 'transparent',
-    fontWeight: 500
+    fontWeight: 500,
+    fontSize: 70
   }
 }))
 
-export default function StatsCard() {
+export default function StatsCard({
+  numOfProjects,
+  completedProjects
+}) {
   const classes = useStyles()
+
   return (
     <Card className={classes.card}>
       <div className={classes.buffer}>
         <Typography variant="h2" className={classes.h2}>
-          0/2
+          {completedProjects}
+          /
+          {numOfProjects}
         </Typography>
         <Typography variant="subtitle1">
-          completed (hardcoded)
+          completed
         </Typography>
       </div>
     </Card>

@@ -16,14 +16,14 @@ const CardContainer = styled.div`
 
 const CardContent = styled.div``
 
-const Card = ({ card }) => {
+export default function Card({ card }) {
   return (
     <Draggable key={card.id}>
-      <CardContainer className="card">
+      <CardContainer className='card'>
         <CardContent>{card.title}</CardContent>
       </CardContainer>
     </Draggable>
   )
 }
 
-export default Card
+

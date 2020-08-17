@@ -45,15 +45,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const GET_PROJECTS = gql`
-  query {
-    getProjects {
-      id
-      title
-    }
-  }
-`
-
 const PROJECT_ADDED = gql`
   subscription {
     projectAdded {
@@ -80,14 +71,11 @@ const ADD_INITIAL_SECTIONS = gql`
   }
 `
 
-export default function ProjectsCard() {
+export default function ProjectsCard({ projects: incomingProjects }) {
   const classes = useStyles()
 
   const [addProjectInputText, setAddProjectInputText] = useState('')
-  const [projects, setProjects] = useState([])
-
-  // QUERIES
-  const { loading, error, data } = useQuery(GET_PROJECTS)
+  const [projects, setProjects] = useState(incomingProjects)
 
   // MUTATIONS
   const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
@@ -95,12 +83,6 @@ export default function ProjectsCard() {
 
   // SUBSCRPTIONS
   const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
-
-  useEffect(() => {
-    if (data) {
-      setProjects(data.getProjects)
-    }
-  }, [data])
 
   useEffect(() => {
     if (projectAdded) {

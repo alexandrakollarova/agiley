@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useQuery, useMutation, useSubscription, useLazyQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import { IoIosAdd } from 'react-icons/io'
 import { Container } from 'react-smooth-dnd'
-import CardContainer from './Cards/CardsContainer'
-import ProjectNav from './project-nav'
+import CardContainer from '../../cards/cards-container'
+import ProjectNav from '../project-nav'
 import './index.css'
 import sortBy from 'lodash/sortBy'
-import PosCalculation from '../../utils/pos_calculation'
+import PosCalculation from '../../../utils/pos_calculation'
+import workflow from '../../../images/workflow2.jpg'
+import {
+  makeStyles
+} from '@material-ui/core'
+
 import {
   BoardContainer,
   CardHorizontalContainer,
@@ -24,6 +29,16 @@ import {
   SubmitCardIcon,
 } from './board.styles'
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  bgImage: {
+    width: 300
+  }
+}))
+
+
 const GET_SECTIONS_BY_PROJECT_ID = gql`
   query getSectionsByProjectId($projectId: ID!) {
     getSectionsByProjectId(request: { projectId: $projectId}) {
@@ -32,6 +47,7 @@ const GET_SECTIONS_BY_PROJECT_ID = gql`
       label
       pos
       description
+      projectId
       cards {
         id
         title
@@ -42,7 +58,6 @@ const GET_SECTIONS_BY_PROJECT_ID = gql`
     }
   }
 `
-
 
 const SECTION_ADDED = gql`
   subscription {
@@ -92,6 +107,7 @@ const ON_SECTION_POS_CHANGE = gql`
 `
 
 export default function Project() {
+  const classes = useStyles()
   const location = useLocation()
   const projectId = location.state.id
   const projectTitle = location.state.title
@@ -106,7 +122,7 @@ export default function Project() {
   })
 
   // MUTATIONS
-  const [AddSection, { insertSection }] = useMutation(ADD_SECTION)
+  const [AddSection] = useMutation(ADD_SECTION)
   const [updateSectionPos] = useMutation(UPDATE_SECTION_POS)
 
   // SUBSCRIPTIONS
@@ -129,7 +145,6 @@ export default function Project() {
   useEffect(() => {
     if (onSectionPosChange) {
       let newSections = sections
-
       newSections = newSections.map(section => {
         if (section.id === onSectionPosChange.id) {
           return { ...section, pos: onSectionPosChange.pos }
@@ -204,35 +219,29 @@ export default function Project() {
       <Container
         orientation={'horizontal'}
         onDrop={onColumnDrop}
-        // onDragStart={() => {
-        //   console.log('on drag start')
-        // }}
-        getChildPayload={(index) => {
-          return sections[index]
-        }}
+        getChildPayload={index => sections[index]}
         dragHandleSelector=".column-drag-handle"
         dropPlaceholder={{
           animationDuration: 150,
           showOnTop: true,
-          className: 'cards-drop-preview',
+          className: 'cards-drop-preview'
         }}
       >
         {sections.length > 0 &&
-          sections.map((item, index) => (
-            <CardContainer item={item} key={index} sections={sections} />
-          ))}
+          sections.map((section, index) => <CardContainer key={index} section={section} sections={sections} />)
+        }
       </Container>
       <AddSectionDiv onClick={() => setAddSectionInputActive(true)}>
         <AddSectionForm>
           {isAddSectionInputActive ? (
             <React.Fragment>
               <ActiveAddSectionInput
-                onChange={(e) => setAddSectionInputText(e.target.value)}
+                onChange={e => setAddSectionInputText(e.target.value)}
               />
               <SubmitCardButtonDiv>
                 <SubmitCardButton
-                  type="button"
-                  value="Add Card"
+                  type='button'
+                  value='Add Card'
                   onClick={onAddSectionSubmit}
                 />
                 <SubmitCardIcon>
@@ -253,9 +262,9 @@ export default function Project() {
             )}
         </AddSectionForm>
       </AddSectionDiv>
-      {/* <div className='scrum-board2-wrapper'>
-        <img src={scrumBoard2} alt="scrum-board" className="scrum-board2" />
-      </div> */}
+      <div>
+        <img src={workflow} alt="workflow" className={classes.bgImage} />
+      </div>
     </div>
   )
 }

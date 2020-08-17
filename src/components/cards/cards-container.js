@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Card from '../Card'
+import Card from '.'
 import { Container, Draggable } from 'react-smooth-dnd'
 import { IoIosAdd } from 'react-icons/io'
-import { useMutation, useSubscription } from '@apollo/react-hooks'
+import { useMutation, useSubscription, useQuery, useApolloClient } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import PosCalculation from '../../../../utils/pos_calculation'
+import PosCalculation from '../../utils/pos_calculation'
 import sortBy from 'lodash/sortBy'
 
 import {
@@ -23,6 +23,19 @@ import {
   SubmitCardButton,
   SubmitCardIcon,
 } from './index-styles'
+
+const GET_CARDS_BY_SECTION_ID = gql`
+  query getCardsBySectionId($sectionId: ID!) {
+    getCardsBySectionId(request: { sectionId: $sectionId}) {
+      id
+      title
+      label
+      description
+      pos
+      sectionId
+    }
+  }
+`
 
 const ADD_CARD = gql`
   mutation InsertCard(
@@ -66,7 +79,8 @@ const UPDATE_CARD_POS = gql`
       id
       title
       label
-      pos
+      pos,
+      sectionId
     }
   }
 `
@@ -84,13 +98,50 @@ const ON_CARD_POS_CHANGE = gql`
   }
 `
 
-const CardContainer = ({ item, sections }) => {
+const GET_PROJECTS = gql`
+  query {
+    getProjects {
+      id
+      title
+    }
+  }
+`
+
+const GET_SECTIONS = gql`
+  query {
+    getSections {
+      id
+      title
+      label
+      pos
+      description
+      projectId
+      cards {
+        id
+        title
+        label
+        description
+        pos
+      }
+    }
+  }
+`
+
+export default function CardContainer({ section, sections }) {
+  const client = useApolloClient()
+  const sectionId = section.id
+
   const [cards, setCards] = useState([])
   const [isTempCardActive, setTempCardActive] = useState(false)
   const [cardText, setCardText] = useState('')
 
+  // QUERIES
+  const { loading, error, data } = useQuery(GET_CARDS_BY_SECTION_ID, {
+    variables: { sectionId }
+  })
+
   // MUTATIONS
-  const [insertCard, { data }] = useMutation(ADD_CARD)
+  const [insertCard] = useMutation(ADD_CARD)
   const [updateCardPos] = useMutation(UPDATE_CARD_POS)
 
   // SUBSCRIPTIONS
@@ -98,17 +149,15 @@ const CardContainer = ({ item, sections }) => {
   const { data: { onCardPosChange } = {} } = useSubscription(ON_CARD_POS_CHANGE)
 
   useEffect(() => {
-    if (item && item.cards) {
-      setCards(item.cards)
+    if (data) {
+      setCards(data.getCardsBySectionId)
     }
-  }, [item])
+  }, [data])
 
   useEffect(() => {
     if (cardAdded) {
-      console.log('cards', cards)
-      if (item.id === cardAdded.sectionId) {
+      if (section.id === cardAdded.sectionId) {
         setCards(cards.concat(cardAdded))
-
         setTempCardActive(false)
       }
     }
@@ -116,50 +165,44 @@ const CardContainer = ({ item, sections }) => {
 
   useEffect(() => {
     if (onCardPosChange) {
-      let newCards = cards
-
-      newCards = newCards.map(card => {
+      let newCards = cards.map(card => {
         if (card.id === onCardPosChange.id) {
-          console.log('current card pos', card.pos)
-          console.log('updated card pos', onCardPosChange.pos)
-          return { ...card, pos: card.pos }
+          return {
+            ...card,
+            pos: onCardPosChange.pos,
+            sectionId: onCardPosChange.sectionId
+          }
         } else {
           return card
         }
       })
 
-      //console.log('new cards', newCards)
-
-      let sortedCards = sortBy(newCards, [
-        (card) => card.pos
-      ])
-
+      let sortedCards = sortBy(newCards, card => card.pos)
       setCards(sortedCards)
     }
   }, [onCardPosChange])
 
-  const onCardDrop = (columnId, addedIndex, removedIndex, payload) => {
+  function onCardDrop(columnId, addedIndex, removedIndex, payload) {
     let updatedPOS
 
     if (addedIndex !== null && removedIndex !== null) {
-      let sectionCards = sections.filter((p) => p.id === columnId)[0]
+      let section = sections.filter(section => section.id === columnId)[0]
 
-      updatedPOS = PosCalculation(removedIndex, addedIndex, sectionCards.cards)
+      updatedPOS = PosCalculation(removedIndex, addedIndex, section.cards)
 
-      let newCards = cards.map((item) => {
-        if (item.id === payload.id) {
+      let newCards = cards.map(card => {
+        if (card.id === payload.id) {
           return {
-            ...item,
-            pos: updatedPOS,
+            ...card,
+            pos: updatedPOS
           }
         } else {
-          return item
+          return card
         }
       })
 
-      let sortedCards = sortBy(newCards, (item) => item.pos)
-
-      console.log('updated POS', updatedPOS)
+      let sortedCards = sortBy(newCards, card => card.pos)
+      setCards(sortedCards)
 
       updateCardPos({
         variables: {
@@ -168,56 +211,42 @@ const CardContainer = ({ item, sections }) => {
           sectionId: columnId,
         }
       })
-
-      setCards(sortedCards)
-
     } else if (addedIndex !== null) {
-      const newColumn = sections.filter((p) => p.id === columnId)[0]
-      if (addedIndex === 0) {
-        updatedPOS = newColumn.cards[0].pos / 2
-      } else if (addedIndex === newColumn.cards.length) {
-        updatedPOS = newColumn.cards[newColumn.cards.length - 1].pos + 16384
-      } else {
-        let afterCardPOS = newColumn.cards[addedIndex].pos
-        let beforeCardPOS = newColumn.cards[addedIndex - 1].pos
+      const newSection = sections.filter(section => section.id === columnId)[0]
 
-        updatedPOS = (afterCardPOS + beforeCardPOS) / 2
-      }
+      updatedPOS = PosCalculation(removedIndex, addedIndex, newSection.cards)
+      const sectionIds = sections.map(section => section.id)
 
-      let newCards = cards.map((item) => {
-        if (item.id === payload.id) {
-          return {
-            ...item,
-            pos: updatedPOS,
-          }
-        } else {
-          return item
-        }
+      const queries = sectionIds.map(id => {
+        return { query: GET_CARDS_BY_SECTION_ID, variables: { sectionId: id } }
       })
 
-      let sortedCards = sortBy(newCards, (item) => item.pos)
+      queries.push(
+        { query: GET_PROJECTS },
+        { query: GET_SECTIONS }
+      )
 
       updateCardPos({
         variables: {
           cardId: payload.id,
           pos: parseInt(updatedPOS),
-          sectionId: columnId,
+          sectionId: columnId
         },
+        refetchQueries: queries
       })
-      setCards(sortedCards)
     }
   }
 
-  const onAddButtonClick = () => {
+  function onAddButtonClick() {
     setTempCardActive(true)
   }
 
-  const onAddCardSubmit = (e) => {
+  function onAddCardSubmit(e) {
     e.preventDefault()
     if (cardText) {
       insertCard({
         variables: {
-          sectionId: item.id,
+          sectionId: section.id,
           title: cardText,
           label: cardText,
           pos:
@@ -226,64 +255,52 @@ const CardContainer = ({ item, sections }) => {
               : 16348,
         },
       })
-
       setCardText('')
     }
   }
 
   return (
-    <Draggable key={item.id}>
+    <Draggable key={section.id}>
       <Wrapper className={'card-container'}>
         <WrappedSection>
           <CardContainerHeader className={'column-drag-handle'}>
-            <ContainerContainerTitle>{item.title}</ContainerContainerTitle>
+            <ContainerContainerTitle>{section.title}</ContainerContainerTitle>
           </CardContainerHeader>
           <CardsContainer>
             <Container
               orientation={'vertical'}
-              groupName="col"
-              // onDragStart={(e) => console.log("Drag Started")}
-              // onDragEnd={(e) => console.log("drag end", e)}
-              onDrop={(e) => {
-                onCardDrop(item.id, e.addedIndex, e.removedIndex, e.payload)
-              }}
-              dragClass="card-ghost"
-              dropClass="card-ghost-drop"
-              // onDragEnter={() => {
-              // }}
-              getChildPayload={(index) => {
-                return cards[index]
-              }}
-              // onDragLeave={() => {
-              // }}
-              // onDropReady={(p) => console.log("Drop ready: ", p)}
+              groupName='col'
+              // onDragStart={e => console.log('drag started')}
+              //onDragEnd={e => console.log('DRAG END', e)}
+              onDrop={e => onCardDrop(section.id, e.addedIndex, e.removedIndex, e.payload)}
+              dragClass='card-ghost'
+              dropClass='card-ghost-drop'
+              // onDragEnter={e => console.log('on drag enter', e)}
+              getChildPayload={index => cards[index]}
+              //onDropReady={e => console.log('ON DROP READY', e)}
               dropPlaceholder={{
                 animationDuration: 150,
                 showOnTop: true,
-                className: 'drop-preview',
+                className: 'drop-preview'
               }}
               dropPlaceholderAnimationDuration={200}
             >
-              {cards.map((card) => (
-                <Card key={card.id} card={card} />
-              ))}
+              {cards.map(card => <Card key={card.id} card={card} />)}
             </Container>
             {isTempCardActive ? (
               <CardComposerDiv>
                 <ListCardComponent>
                   <ListCardDetails>
                     <ListCardTextArea
-                      placeholder="Enter a title for the card"
-                      onChange={(e) => {
-                        setCardText(e.target.value)
-                      }}
+                      placeholder='Enter a title for the card'
+                      onChange={e => setCardText(e.target.value)}
                     />
                   </ListCardDetails>
                 </ListCardComponent>
                 <SubmitCardButtonDiv>
                   <SubmitCardButton
-                    type="button"
-                    value="Add Card"
+                    type='button'
+                    value='Add Card'
                     onClick={onAddCardSubmit}
                   />
                   <SubmitCardIcon>
@@ -302,5 +319,3 @@ const CardContainer = ({ item, sections }) => {
     </Draggable>
   )
 }
-
-export default CardContainer
