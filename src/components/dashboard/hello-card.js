@@ -5,11 +5,12 @@ import {
   Typography,
   Grid
 } from '@material-ui/core'
+import img from '../../images/programmer.png'
 
 const useStyles = makeStyles(theme => ({
   card: {
     height: '100%',
-    background: theme.palette.orange.main,
+    background: theme.palette.yellow.main,
     boxShadow: '0 100px 80px rgba(0, 0, 0, 0.12)',
     borderRadius: 10,
     display: 'flex',
@@ -17,37 +18,42 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   },
   buffer: {
-    padding: theme.spacing(4)
+    padding: theme.spacing(5, 0, 5, 5)
   },
   h6: {
-    color: 'white',
+    fontWeight: 700
   },
-  body1: {
-    color: 'white'
+  subtitle1: {
+    lineHeight: 1.5
+  },
+  img: {
+    width: '100%'
   }
 }))
 
-export default function HelloCard() {
+export default function HelloCard({ progress }) {
   const classes = useStyles()
   return (
     <Card className={classes.card}>
-      <div className={classes.buffer}>
-        <Grid container>
-          <Grid item xs={9}>
-            <Typography variant="h6" className={classes.h6}>
-              Welcome back!
+      <Grid
+        container
+        justify="center"
+        alignItems="center"
+      >
+        <Grid item xs={7} className={classes.buffer}>
+          <Typography variant="h6" className={classes.h6}>
+            Welcome back!
             </Typography>
-            <Typography variant="body1" className={classes.body1}>
-              You've made % progress of your goal this week.
+          <Typography variant="subtitle1" className={classes.subtitle1}>
+            You've made {Math.round(progress)}% progress with your projects so far.
+            <br />
               Keep it up!
             </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            illustration
-          </Grid>
         </Grid>
-
-      </div>
+        <Grid item xs={5}>
+          <img src={img} alt="programmer" className={classes.img} />
+        </Grid>
+      </Grid>
     </Card>
   )
 }

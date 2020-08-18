@@ -1,6 +1,6 @@
-import React from "react"
-import styled from "styled-components"
-import { Draggable } from "react-smooth-dnd"
+import React from 'react'
+import styled from 'styled-components'
+import { Draggable } from 'react-smooth-dnd'
 
 const CardContainer = styled.div`
   border-radius: 3px;
@@ -16,14 +16,14 @@ const CardContainer = styled.div`
 
 const CardContent = styled.div``
 
-const Card = ({ card }) => {
+export default function Card({ card }) {
   return (
     <Draggable key={card.id}>
-      <CardContainer className="card">
+      <CardContainer className='card'>
         <CardContent>{card.title}</CardContent>
       </CardContainer>
     </Draggable>
   )
 }
 
-export default Card
+

@@ -45,15 +45,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const GET_PROJECTS = gql`
-  query {
-    getProjects {
-      id
-      title
-    }
-  }
-`
-
 const PROJECT_ADDED = gql`
   subscription {
     projectAdded {
@@ -72,26 +63,26 @@ const ADD_PROJECT = gql`
   }
 `
 
-export default function ProjectsCard() {
+const ADD_INITIAL_SECTIONS = gql`
+  mutation AddInitialSections($projectId: ID!) {
+    addInitialSections(request: { projectId: $projectId }) {
+      id
+    }
+  }
+`
+
+export default function ProjectsCard({ projects: incomingProjects }) {
   const classes = useStyles()
 
   const [addProjectInputText, setAddProjectInputText] = useState('')
-  const [projects, setProjects] = useState([])
-
-  // QUERIES
-  const { loading, error, data } = useQuery(GET_PROJECTS)
+  const [projects, setProjects] = useState(incomingProjects)
 
   // MUTATIONS
   const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
+  const [AddInitialSections, { insertSections }] = useMutation(ADD_INITIAL_SECTIONS)
 
   // SUBSCRPTIONS
   const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
-
-  useEffect(() => {
-    if (data) {
-      setProjects(data.getProjects)
-    }
-  }, [data])
 
   useEffect(() => {
     if (projectAdded) {
@@ -107,6 +98,12 @@ export default function ProjectsCard() {
         variables: {
           title: addProjectInputText
         }
+      }).then(res => {
+        AddInitialSections({
+          variables: {
+            projectId: res.data.insertProject.id
+          }
+        })
       })
       setAddProjectInputText('')
     }

@@ -4,7 +4,8 @@ import {
   makeStyles,
   Grid,
   Container,
-  Typography
+  Typography,
+  useMediaQuery
 } from '@material-ui/core'
 import ProgressCard from './progress-card'
 import ProjectsCard from './projects-card'
@@ -23,6 +24,15 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const GET_PROJECTS = gql`
+  query {
+    getProjects {
+      id
+      title
+    }
+  }
+`
+
 const GET_SECTIONS = gql`
   query {
     getSections {
@@ -31,6 +41,7 @@ const GET_SECTIONS = gql`
       label
       pos
       description
+      projectId
       cards {
         id
         title
@@ -44,33 +55,51 @@ const GET_SECTIONS = gql`
 
 export default function Dashboard() {
   const classes = useStyles()
+  const desktop = useMediaQuery('(min-width:1000px)')
+  const mobile = useMediaQuery('(min-width:450px)')
 
-  const { loading, error, data } = useQuery(GET_SECTIONS)
+  // QUERIES
+  const { loading: loadingSections, error: errorSections, data: dataSections } = useQuery(GET_SECTIONS)
+  const { loading: loadingProjects, error: errorProjects, data: dataProjects } = useQuery(GET_PROJECTS)
 
-  if (loading) return 'Loading...' // replace with Material UI spinner
-  if (error) return `Error! ${error.message}`
+  if (loadingSections) return 'Loading...'
+  if (errorSections) return `Error! ${errorSections.message}`
+  if (loadingProjects) return 'Loading...' // replace with Material UI spinner
+  if (errorProjects) return `Error! ${errorProjects.message}`
 
   function getOverallProgress() {
     let sumTodo = 0
     let sumInProgress = 0
     let sumDone = 0
 
-    data.getSections.map(section => {
-      if (section.label === 'todo') {
-        sumTodo = sumTodo + section.cards.length
-      }
-      else if (section.label === 'in progress') {
-        sumInProgress = sumInProgress + section.cards.length
-      }
-      else if (section.label === 'done') {
-        sumDone = sumDone + section.cards.length
-      }
-
+    dataSections.getSections.map(section => {
+      if (section.label === 'todo') sumTodo = sumTodo + section.cards.length
+      else if (section.label === 'in progress') sumInProgress = sumInProgress + section.cards.length
+      else if (section.label === 'done') sumDone = sumDone + section.cards.length
     })
 
     let total = sumTodo + sumInProgress + sumDone
-
     return (100 * sumDone) / total
+  }
+
+  function getNumOfCompletedProjects() {
+    let completedProjects = 0
+
+    dataProjects.getProjects.map(project => {
+      let sumTodo = 0
+      let sumInProgress = 0
+      let sumDone = 0
+
+      dataSections.getSections.map(section => {
+        if (project.id === section.projectId) {
+          if (section.label === 'todo') sumTodo = sumTodo + section.cards.length
+          else if (section.label === 'in progress') sumInProgress = sumInProgress + section.cards.length
+          else if (section.label === 'done') sumDone = sumDone + section.cards.length
+        }
+      })
+      if (sumTodo === 0 && sumInProgress === 0 && sumDone > 0) completedProjects++
+    })
+    return completedProjects
   }
 
   return (
@@ -81,20 +110,20 @@ export default function Dashboard() {
           <Grid item xs={12}>
             <Typography variant="h5" className={classes.h5}>dashboard</Typography>
           </Grid>
-          <Grid item xs={6}>
-            <HelloCard />
+          <Grid item xs={desktop ? 6 : 12}>
+            <HelloCard progress={getOverallProgress()} />
           </Grid>
-          <Grid item xs={3}>
-            <StatsCard />
+          <Grid item xs={desktop ? 3 : 6}>
+            <StatsCard numOfProjects={dataProjects.getProjects.length} completedProjects={getNumOfCompletedProjects()} />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={desktop ? 3 : 6}>
             <ProgressCard progress={getOverallProgress()} />
           </Grid>
-          <Grid item xs={8}>
-            {/* <GraphCard projects={data.projects} /> */}
+          <Grid item xs={desktop ? 8 : 12}>
+            <GraphCard sections={dataSections.getSections} projects={dataProjects.getProjects} />
           </Grid>
-          <Grid item xs={4}>
-            <ProjectsCard />
+          <Grid item xs={desktop ? 4 : 12}>
+            <ProjectsCard projects={dataProjects.getProjects} />
           </Grid>
         </Grid>
       </Container>

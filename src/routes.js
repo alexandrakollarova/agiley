@@ -1,8 +1,8 @@
-import React from "react"
-import { Switch, Route } from "react-router-dom"
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
 import LandingPage from './components/landing'
 import DashboardPage from './components/dashboard'
-import ProjectPage from './components/project/index.js'
+import ProjectPage from './components/project/sections/index.js'
 
 export default function Routes() {
   return (

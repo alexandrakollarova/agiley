@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useQuery, useMutation, useSubscription, useLazyQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import { IoIosAdd } from "react-icons/io"
+import { IoIosAdd } from 'react-icons/io'
 import { Container } from 'react-smooth-dnd'
-import CardContainer from "./Cards/CardsContainer"
-import ProjectNav from './project-nav'
+import CardContainer from '../../cards/cards-container'
+import ProjectNav from '../project-nav'
 import './index.css'
-import sortBy from "lodash/sortBy"
-import PosCalculation from '../../utils/pos_calculation'
+import sortBy from 'lodash/sortBy'
+import PosCalculation from '../../../utils/pos_calculation'
+import workflow from '../../../images/workflow2.jpg'
+import {
+  makeStyles
+} from '@material-ui/core'
+
 import {
   BoardContainer,
   CardHorizontalContainer,
@@ -22,28 +27,27 @@ import {
   SubmitCardButtonDiv,
   SubmitCardButton,
   SubmitCardIcon,
-} from "./board.styles"
+} from './board.styles'
 
-const GET_PROJECT_BY_ID = gql`
-  query GetProjectById($id: ID!) {
-    getProjectById(id: $id) {
-      id
-      title
-      sections {
-        id
-      }
-    }
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  bgImage: {
+    width: 300
   }
-`
+}))
 
-const GET_SECTIONS_BY_ID = gql`
-  query GetSectionsById($ids: [ID]!) {
-    getSectionsById(ids: $ids) {
+
+const GET_SECTIONS_BY_PROJECT_ID = gql`
+  query getSectionsByProjectId($projectId: ID!) {
+    getSectionsByProjectId(request: { projectId: $projectId}) {
       id
       title
       label
       pos
       description
+      projectId
       cards {
         id
         title
@@ -54,7 +58,6 @@ const GET_SECTIONS_BY_ID = gql`
     }
   }
 `
-
 
 const SECTION_ADDED = gql`
   subscription {
@@ -76,11 +79,10 @@ const SECTION_ADDED = gql`
 `
 
 const ADD_SECTION = gql`
-  mutation AddSection($id: ID!, $title: String!, $label: String!, $pos: Int!) {
-    insertSection(request: { id: $id, title: $title, label: $label, pos: $pos }) {
+  mutation AddSection($title: String!, $label: String!, $pos: Int!, $projectId: ID!) {
+    insertSection(request: { title: $title, label: $label, pos: $pos, projectId: $projectId }) {
       title
       description
-      id
       label
     }
   }
@@ -95,7 +97,7 @@ const UPDATE_SECTION_POS = gql`
   }
 `
 
-const ON_SECTION_POS_CHANGES = gql`
+const ON_SECTION_POS_CHANGE = gql`
   subscription {
     onSectionPosChange {
       id
@@ -105,6 +107,7 @@ const ON_SECTION_POS_CHANGES = gql`
 `
 
 export default function Project() {
+  const classes = useStyles()
   const location = useLocation()
   const projectId = location.state.id
   const projectTitle = location.state.title
@@ -114,37 +117,34 @@ export default function Project() {
   const [sections, setSections] = useState([])
 
   // QUERIES
-  const GetProjectById = useQuery(GET_PROJECT_BY_ID, {
-    variables: {
-      id: projectId
-    }
+  const { loading, error, data } = useQuery(GET_SECTIONS_BY_PROJECT_ID, {
+    variables: { projectId }
   })
-  const [GetSectionsById, { data }] = useLazyQuery(GET_SECTIONS_BY_ID)
 
   // MUTATIONS
-  const [AddSection, { insertSection }] = useMutation(ADD_SECTION)
+  const [AddSection] = useMutation(ADD_SECTION)
   const [updateSectionPos] = useMutation(UPDATE_SECTION_POS)
 
   // SUBSCRIPTIONS
   const { data: { sectionAdded } = {} } = useSubscription(SECTION_ADDED)
-  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGES)
+  const { data: { onSectionPosChange } = {} } = useSubscription(ON_SECTION_POS_CHANGE)
 
   useEffect(() => {
-    if (!GetProjectById.loading && GetProjectById.data !== '') {
-      const ids = GetProjectById.data.getProjectById.sections.map(section => section.id)
-
-      GetSectionsById({ variables: { ids } })
-
-      if (data) {
-        setSections(data.getSectionsById)
-      }
+    if (data) {
+      setSections(data.getSectionsByProjectId)
     }
-  }, [GetProjectById, GetSectionsById, data])
+  }, [data])
+
+  useEffect(() => {
+    if (sectionAdded) {
+      setSections(sections.concat(sectionAdded))
+      setAddSectionInputActive(false)
+    }
+  }, [sectionAdded])
 
   useEffect(() => {
     if (onSectionPosChange) {
       let newSections = sections
-
       newSections = newSections.map(section => {
         if (section.id === onSectionPosChange.id) {
           return { ...section, pos: onSectionPosChange.pos }
@@ -154,28 +154,20 @@ export default function Project() {
       })
 
       let sortedSections = sortBy(newSections, [
-        (section) => {
-          return section.pos
-        }
+        (section) => section.pos
       ])
       setSections(sortedSections)
     }
-  }, [onSectionPosChange, sections])
-
-  useEffect(() => {
-    if (sectionAdded) {
-      setSections(sections.concat(sectionAdded))
-      setAddSectionInputActive(false)
-    }
-  }, [sectionAdded])
+  }, [onSectionPosChange])
 
   function onColumnDrop({ removedIndex, addedIndex, payload }) {
     if (data) {
       let updatePOS = PosCalculation(
         removedIndex,
         addedIndex,
-        data.fetchSections
+        sections
       )
+
       let newSections = sections.map(section => {
         if (section.id === payload.id) {
           return { ...section, pos: updatePOS }
@@ -185,9 +177,7 @@ export default function Project() {
       })
 
       let sortedSections = sortBy(newSections, [
-        (section) => {
-          return section.pos
-        }
+        (section) => section.pos
       ])
 
       updateSectionPos({
@@ -202,16 +192,17 @@ export default function Project() {
 
   function onAddSectionSubmit(e) {
     e.preventDefault()
+
     if (addSectionInputText) {
       AddSection({
         variables: {
-          id: projectId,
           title: addSectionInputText,
           label: addSectionInputText,
           pos:
             sections && sections.length > 0
               ? sections[sections.length - 1].pos + 16384
-              : 16384
+              : 16384,
+          projectId: projectId
         }
       })
     }
@@ -226,37 +217,31 @@ export default function Project() {
       </div>
 
       <Container
-        orientation={"horizontal"}
+        orientation={'horizontal'}
         onDrop={onColumnDrop}
-        onDragStart={() => {
-          console.log("on drag start")
-        }}
-        getChildPayload={(index) => {
-          return sections[index]
-        }}
+        getChildPayload={index => sections[index]}
         dragHandleSelector=".column-drag-handle"
         dropPlaceholder={{
           animationDuration: 150,
           showOnTop: true,
-          className: "cards-drop-preview",
+          className: 'cards-drop-preview'
         }}
       >
         {sections.length > 0 &&
-          sections.map((item, index) => (
-            <CardContainer item={item} key={index} sections={sections} />
-          ))}
+          sections.map((section, index) => <CardContainer key={index} section={section} sections={sections} />)
+        }
       </Container>
       <AddSectionDiv onClick={() => setAddSectionInputActive(true)}>
         <AddSectionForm>
           {isAddSectionInputActive ? (
             <React.Fragment>
               <ActiveAddSectionInput
-                onChange={(e) => setAddSectionInputText(e.target.value)}
+                onChange={e => setAddSectionInputText(e.target.value)}
               />
               <SubmitCardButtonDiv>
                 <SubmitCardButton
-                  type="button"
-                  value="Add Card"
+                  type='button'
+                  value='Add Card'
                   onClick={onAddSectionSubmit}
                 />
                 <SubmitCardIcon>
@@ -277,9 +262,9 @@ export default function Project() {
             )}
         </AddSectionForm>
       </AddSectionDiv>
-      {/* <div className='scrum-board2-wrapper'>
-        <img src={scrumBoard2} alt="scrum-board" className="scrum-board2" />
-      </div> */}
+      <div>
+        <img src={workflow} alt="workflow" className={classes.bgImage} />
+      </div>
     </div>
   )
 }

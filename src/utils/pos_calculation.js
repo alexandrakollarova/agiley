@@ -3,7 +3,7 @@ export default function (removedIndex, addedIndex, arr) {
   if (addedIndex === arr.length - 1) {
     pos = arr[arr.length - 1].pos + 16384
   } else if (addedIndex === 0) {
-    pos = arr[0].pos / 2
+    pos = arr[0] ? arr[0].pos / 2 : 1000
   } else if (addedIndex < removedIndex) {
     let beforePOS = arr[addedIndex - 1].pos
     let afterPOS = arr[addedIndex].pos
@@ -15,6 +15,5 @@ export default function (removedIndex, addedIndex, arr) {
 
     pos = (beforePOS + afterPOS) / 2
   }
-
   return pos
 }

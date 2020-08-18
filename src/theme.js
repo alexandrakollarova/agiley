@@ -25,28 +25,28 @@ let theme = createMuiTheme({
       color: '#707070'
     },
     h3: {
-      color: '#707070'
+      color: '#1631A4'
     },
     h4: {
       color: '#707070'
     },
     h5: {
-      color: '#707070'
+      color: '#1631A4'
     },
     h6: {
-      color: '#707070'
+      color: '#1631A4'
     },
     subtitle1: {
-      color: '#707070'
+      color: '#1631A4'
     },
     body1: {
-      color: '#707070'
+      color: '#1631A4'
     },
     subtitle2: {
       color: '#707070'
     },
     body2: {
-      color: '#707070'
+      color: '#1631A4'
     },
     overline: {
       color: '#707070'
@@ -63,18 +63,21 @@ let theme = createMuiTheme({
     },
     MuiInputBase: {
       root: {
-        color: '#FF911E'
+        color: '#FEBB46'
 
       },
       input: {
-        "&::placeholder": {
-          color: '#FF911E',
+        '&::placeholder': {
+          color: '#FEBB46',
           opacity: 1
         }
       }
     }
   },
   palette: {
+    yellow: {
+      main: '#FFD647'
+    },
     blue: {
       main: '#282EBA',
     },
@@ -88,8 +91,8 @@ let theme = createMuiTheme({
     greyGradient: {
       main: 'linear-gradient(to bottom right, white, rgba(227, 227, 227, 0.8))'
     },
-    gradient: {
-      main: '-webkit-linear-gradient(#FEBB46, #282EBA, rgba(103, 116, 255, 0.7))'
+    blueGradient: {
+      main: '-webkit-linear-gradient(#6774FF, #343A80)'
     }
   }
 })

@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from "react-router-dom"
+import { NavLink } from 'react-router-dom'
 import {
   makeStyles,
   AppBar,
@@ -12,7 +12,7 @@ const useStyles = makeStyles({
   },
   appBar: {
     background: 'transparent',
-    color: '#282EBA',
+    color: '#1631A4',
     fontWeight: 600,
     boxShadow: 'none'
   },

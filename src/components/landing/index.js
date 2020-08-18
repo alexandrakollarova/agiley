@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom'
 import LandingNav from './landing-nav'
 import {
   Typography,
-  makeStyles
+  makeStyles,
+  Grid
 } from '@material-ui/core'
+import workflow from '../../images/workflow.jpg'
 
 const useStyles = makeStyles(theme => ({
   headline: {
     color: '#282EBA',
-    fontWeight: 700
+    fontWeight: 700,
+    float: 'right'
   },
   h6: {
     color: 'white',
@@ -43,6 +46,12 @@ const useStyles = makeStyles(theme => ({
     borderTopRightRadius: 50,
     borderTopLeftRadius: 50,
     zIndex: -1
+  },
+  bgImage: {
+    width: 650
+  },
+  bgImageWrapper: {
+    width: 650,
   }
 }))
 
@@ -51,18 +60,22 @@ export default function LandingPage() {
   return (
     <>
       <LandingNav />
-      <div>
-        {/* <div className='scrum-board-wrapper'>
-          <img src={scrumBoard} alt="scrum-board-bg" className="scrum-board" />
-        </div> */}
-        <div>
+      <Grid
+        container
+        justify="center"
+        alignItems="center"
+      >
+        <Grid item xs={5}>
           <Typography variant="h2" className={classes.headline}>
             Track small
             <br />to large scale
             <br />projects.
           </Typography>
-        </div>
-      </div>
+        </Grid>
+        <Grid item xs={7} className={classes.bgImageWrapper}>
+          <img src={workflow} alt="workflow" className={classes.bgImage} width={650} />
+        </Grid>
+      </Grid>
       <div className={classes.footerWrapper}>
         <Link to='/dashboard' className={classes.exploreBtn}>EXPLORE VISBO</Link>
         <Typography variant="h6" className={classes.h6}>Easy, flexible and free.</Typography>

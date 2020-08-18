@@ -1,16 +1,43 @@
 import React from 'react'
-import { NavLink } from "react-router-dom"
+import { NavLink } from 'react-router-dom'
+import {
+  makeStyles,
+  AppBar,
+  Toolbar,
+} from '@material-ui/core'
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  appBar: {
+    background: 'transparent',
+    color: '#1631A4',
+    fontWeight: 600,
+    boxShadow: 'none'
+  },
+  logo: {
+    flexGrow: 1
+  },
+  home: {
+    '&:hover': {
+      borderBottom: '3px solid #FF911E'
+    },
+    marginLeft: theme.spacing(2)
+  }
+}))
 
 export default function ProjectNav() {
+  const classes = useStyles()
   return (
-    <header>
-      <nav>
-        <ul>
-          <NavLink to='/' className='logo'>agiley</NavLink>
-          <NavLink to='/dashboard' className='landing-nav-li demo'>dashboard</NavLink>
-          <NavLink to='/' className='demo-nav-li'>home</NavLink>
-        </ul>
-      </nav>
-    </header>
+    <div className={classes.root}>
+      <AppBar position="static" className={classes.appBar}>
+        <Toolbar>
+          <NavLink to='/' className={classes.logo}>agiley</NavLink>
+          <NavLink to='/dashboard' className={classes.home}>dashboard</NavLink>
+          <NavLink to='/' className={classes.home}>home</NavLink>
+        </Toolbar>
+      </AppBar>
+    </div>
   )
 }
