@@ -2,39 +2,62 @@ import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import { IoIosAdd } from 'react-icons/io'
 import { Container } from 'react-smooth-dnd'
-import CardContainer from '../../cards/cards-container'
+import CardContainer from '../cards/cards-container'
 import ProjectNav from '../project-nav'
 import './index.css'
 import sortBy from 'lodash/sortBy'
 import PosCalculation from '../../../utils/pos_calculation'
 import workflow from '../../../images/workflow2.jpg'
 import {
-  makeStyles
+  Container as ContainerUI,
+  Grid,
+  Typography,
+  makeStyles,
+  Box,
+  InputBase
 } from '@material-ui/core'
-
-import {
-  BoardContainer,
-  CardHorizontalContainer,
-  AddSectionDiv,
-  AddSectionForm,
-  AddSectionLink,
-  AddSectionLinkSpan,
-  AddSectionLinkIconSpan,
-  AddSectionInput,
-  ActiveAddSectionInput,
-  SubmitCardButtonDiv,
-  SubmitCardButton,
-  SubmitCardIcon,
-} from './board.styles'
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    overflowY: 'hidden',
+    overflowX: 'auto',
+    position: 'absolute',
+    alignItems: 'flex-start'
+  },
+  h5: {
+    fontWeight: 500
   },
   bgImage: {
-    width: 300
+    width: 1000,
+    position: 'absolute',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    zIndex: -1
+  },
+  sectionsContainer: {
+    justifyContent: 'space-between',
+    borderRadius: 10,
+    background: theme.palette.purple.main,
+    flexWrap: 'nowrap',
+    position: 'relative',
+    margin: theme.spacing(1)
+  },
+  input: {
+    border: 'none',
+    padding: theme.spacing(1),
+    fontWeight: 700,
+    outline: 'none',
+    display: 'block',
+  },
+  addSectionWrapper: {
+    background: theme.palette.blue.main,
+    borderRadius: 10,
+    padding: theme.spacing(1)
   }
 }))
 
@@ -112,12 +135,11 @@ export default function Project() {
   const projectId = location.state.id
   const projectTitle = location.state.title
 
-  const [isAddSectionInputActive, setAddSectionInputActive] = useState(false)
   const [addSectionInputText, setAddSectionInputText] = useState('')
   const [sections, setSections] = useState([])
 
   // QUERIES
-  const { loading, error, data } = useQuery(GET_SECTIONS_BY_PROJECT_ID, {
+  const { data } = useQuery(GET_SECTIONS_BY_PROJECT_ID, {
     variables: { projectId }
   })
 
@@ -138,7 +160,6 @@ export default function Project() {
   useEffect(() => {
     if (sectionAdded) {
       setSections(sections.concat(sectionAdded))
-      setAddSectionInputActive(false)
     }
   }, [sectionAdded])
 
@@ -205,67 +226,51 @@ export default function Project() {
           projectId: projectId
         }
       })
+      setAddSectionInputText('')
     }
   }
 
   return (
-    <div>
+    <>
       <ProjectNav />
-
-      <div className='project-item-title'>
-        <h2>{projectTitle}</h2>
-      </div>
-
-      <Container
-        orientation={'horizontal'}
-        onDrop={onColumnDrop}
-        getChildPayload={index => sections[index]}
-        dragHandleSelector=".column-drag-handle"
-        dropPlaceholder={{
-          animationDuration: 150,
-          showOnTop: true,
-          className: 'cards-drop-preview'
-        }}
-      >
-        {sections.length > 0 &&
-          sections.map((section, index) => <CardContainer key={index} section={section} sections={sections} />)
-        }
-      </Container>
-      <AddSectionDiv onClick={() => setAddSectionInputActive(true)}>
-        <AddSectionForm>
-          {isAddSectionInputActive ? (
-            <React.Fragment>
-              <ActiveAddSectionInput
-                onChange={e => setAddSectionInputText(e.target.value)}
-              />
-              <SubmitCardButtonDiv>
-                <SubmitCardButton
-                  type='button'
-                  value='Add Card'
-                  onClick={onAddSectionSubmit}
+      <ContainerUI className={classes.root}>
+        <Grid container spacing={2} justify='space-between'>
+          <Grid item xs={12}>
+            <Typography variant="h5" className={classes.h5}>{projectTitle}</Typography>
+          </Grid>
+          <Grid item className={classes.sectionsContainer}>
+            <img src={workflow} alt="workflow" className={classes.bgImage} />
+            <Container
+              orientation={'horizontal'}
+              onDrop={onColumnDrop}
+              getChildPayload={index => sections[index]}
+              dragHandleSelector=".column-drag-handle"
+              dropPlaceholder={{
+                animationDuration: 150,
+                showOnTop: true,
+                className: 'cards-drop-preview'
+              }}
+            >
+              {sections.length > 0 &&
+                sections.map((section, index) => <CardContainer key={index} section={section} sections={sections} projectId={projectId} />)
+              }
+            </Container>
+          </Grid>
+          <Grid item>
+            <Box className={classes.addSectionWrapper}>
+              <form onSubmit={onAddSectionSubmit}>
+                <InputBase
+                  className={classes.input}
+                  placeholder='Add a section'
+                  onChange={e => setAddSectionInputText(e.target.value)}
+                  value={addSectionInputText}
                 />
-                <SubmitCardIcon>
-                  <IoIosAdd />
-                </SubmitCardIcon>
-              </SubmitCardButtonDiv>
-            </React.Fragment>
-          ) : (
-              <React.Fragment>
-                <AddSectionLink>
-                  <AddSectionLinkSpan>
-                    <IoIosAdd size={28} />
-                  Add another list
-                </AddSectionLinkSpan>
-                </AddSectionLink>
-                <AddSectionInput />
-              </React.Fragment>
-            )}
-        </AddSectionForm>
-      </AddSectionDiv>
-      <div>
-        <img src={workflow} alt="workflow" className={classes.bgImage} />
-      </div>
-    </div>
+              </form>
+            </Box>
+          </Grid>
+        </Grid>
+      </ContainerUI>
+    </>
   )
 }
 

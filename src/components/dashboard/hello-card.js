@@ -43,12 +43,12 @@ export default function HelloCard({ progress }) {
         <Grid item xs={7} className={classes.buffer}>
           <Typography variant="h6" className={classes.h6}>
             Welcome back!
-            </Typography>
+          </Typography>
           <Typography variant="subtitle1" className={classes.subtitle1}>
-            You've made {Math.round(progress)}% progress with your projects so far.
+            You've made {progress ? Math.round(progress) : 0}% progress with your projects so far.
             <br />
               Keep it up!
-            </Typography>
+          </Typography>
         </Grid>
         <Grid item xs={5}>
           <img src={img} alt="programmer" className={classes.img} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
+import { useMutation, useSubscription } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {
   makeStyles,
@@ -8,7 +8,8 @@ import {
   ListItem,
   Card,
   Typography,
-  InputBase
+  InputBase,
+  Box
 } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +35,6 @@ const useStyles = makeStyles(theme => ({
     border: 'none',
     padding: theme.spacing(1),
     borderRadius: 10,
-    //background: 'inherit',
     fontWeight: 700,
     outline: 'none',
     marginLeft: theme.spacing(2),
@@ -71,6 +71,35 @@ const ADD_INITIAL_SECTIONS = gql`
   }
 `
 
+const GET_PROJECTS = gql`
+  query {
+    getProjects {
+      id
+      title
+    }
+  }
+`
+
+const GET_SECTIONS = gql`
+  query {
+    getSections {
+      id
+      title
+      label
+      pos
+      description
+      projectId
+      cards {
+        id
+        title
+        label
+        description
+        pos
+      }
+    }
+  }
+`
+
 export default function ProjectsCard({ projects: incomingProjects }) {
   const classes = useStyles()
 
@@ -78,8 +107,13 @@ export default function ProjectsCard({ projects: incomingProjects }) {
   const [projects, setProjects] = useState(incomingProjects)
 
   // MUTATIONS
-  const [AddProject, { insertProject }] = useMutation(ADD_PROJECT)
-  const [AddInitialSections, { insertSections }] = useMutation(ADD_INITIAL_SECTIONS)
+  const [AddProject] = useMutation(ADD_PROJECT, {
+    // refetchQueries: [
+    //   { query: GET_PROJECTS },
+    //   { query: GET_SECTIONS }
+    // ]
+  })
+  const [AddInitialSections] = useMutation(ADD_INITIAL_SECTIONS)
 
   // SUBSCRPTIONS
   const { data: { projectAdded } = {} } = useSubscription(PROJECT_ADDED)
@@ -112,25 +146,22 @@ export default function ProjectsCard({ projects: incomingProjects }) {
   return (
     <Card className={classes.card}>
       <List className={classes.list}>
-        {
-          projects.map(({ id, title }) => {
-            return (
-              <ListItem key={id} className={classes.listItem}>
-                <Link
-                  className={classes.link}
-                  to={{
-                    pathname: `/dashboard/${id}`,
-                    state: { id, title }
-                  }}>
-                  <Typography variant="h6" className={classes.h6}>{title}</Typography>
-                </Link>
-              </ListItem>
-            )
-          })
-        }
+        {projects.map(({ id, title }) => {
+          return (
+            <ListItem key={id} className={classes.listItem}>
+              <Link
+                className={classes.link}
+                to={{
+                  pathname: `/dashboard/${id}`,
+                  state: { id, title }
+                }}>
+                <Typography variant="h6" className={classes.h6}>{title}</Typography>
+              </Link>
+            </ListItem>
+          )
+        })}
       </List>
-
-      <div>
+      <Box>
         <form onSubmit={onAddProjectSubmit}>
           <InputBase
             className={classes.input}
@@ -139,7 +170,7 @@ export default function ProjectsCard({ projects: incomingProjects }) {
             value={addProjectInputText}
           />
         </form>
-      </div>
+      </Box>
     </Card>
   )
 }

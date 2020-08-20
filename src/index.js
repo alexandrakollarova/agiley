@@ -42,9 +42,7 @@ ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
-        <React.StrictMode>
-          <Routes />
-        </React.StrictMode>
+        <Routes />
       </ThemeProvider>
     </ApolloProvider>
   </BrowserRouter>,

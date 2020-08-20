@@ -10,7 +10,7 @@ import workflow from '../../images/workflow.jpg'
 
 const useStyles = makeStyles(theme => ({
   headline: {
-    color: '#282EBA',
+    color: theme.palette.blue.main,
     fontWeight: 700,
     float: 'right'
   },
