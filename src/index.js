@@ -12,13 +12,14 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { ThemeProvider } from '@material-ui/core/styles'
 import theme from './theme'
 import './index.css'
+import { API_ENDPOINT } from '../config'
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: `${API_ENDPOINT}/graphql`,
 })
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:4000/graphql',
+  uri: `ws://${API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
   },

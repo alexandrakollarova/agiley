@@ -20,14 +20,7 @@ import {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    overflowY: 'hidden',
-    overflowX: 'auto',
-    position: 'absolute',
-    alignItems: 'flex-start'
+    flexGrow: 1
   },
   h5: {
     fontWeight: 500
@@ -40,11 +33,8 @@ const useStyles = makeStyles(theme => ({
     zIndex: -1
   },
   sectionsContainer: {
-    justifyContent: 'space-between',
     borderRadius: 10,
     background: theme.palette.purple.main,
-    flexWrap: 'nowrap',
-    position: 'relative',
     margin: theme.spacing(1)
   },
   input: {
@@ -234,12 +224,12 @@ export default function Project() {
     <>
       <ProjectNav />
       <ContainerUI className={classes.root}>
+        <img src={workflow} alt="workflow" className={classes.bgImage} />
         <Grid container spacing={2} justify='space-between'>
           <Grid item xs={12}>
             <Typography variant="h5" className={classes.h5}>{projectTitle}</Typography>
           </Grid>
-          <Grid item className={classes.sectionsContainer}>
-            <img src={workflow} alt="workflow" className={classes.bgImage} />
+          <Grid item xs={12} className={classes.sectionsContainer}>
             <Container
               orientation={'horizontal'}
               onDrop={onColumnDrop}

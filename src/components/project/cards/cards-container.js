@@ -207,7 +207,7 @@ export default function CardContainer({
   const [addCardInputText, setCardInputText] = useState('')
 
   // QUERIES
-  const { loading, error, data } = useQuery(GET_CARDS_BY_SECTION_ID, {
+  const { data } = useQuery(GET_CARDS_BY_SECTION_ID, {
     variables: { sectionId }
   })
 
