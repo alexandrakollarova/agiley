@@ -16,6 +16,7 @@ import config from './config'
 
 const httpLink = new HttpLink({
   uri: `${config.API_ENDPOINT}/graphql`,
+  credentials: 'include'
 })
 
 const wsLink = new WebSocketLink({
