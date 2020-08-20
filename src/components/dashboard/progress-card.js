@@ -72,7 +72,7 @@ export default function ProgressCard({ progress }) {
           alignItems="center"
           justifyContent="center"
         >
-          <Typography variant="h3">{Math.round(progress)}</Typography>
+          <Typography variant="h3">{progress ? Math.round(progress) : 0}</Typography>
           <Typography variant="h6">%</Typography>
         </Box>
       </Box>

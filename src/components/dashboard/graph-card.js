@@ -56,7 +56,7 @@ const Label = withStyles(legendLabelStyles, { name: 'LegendLabel' })(legendLabel
 
 const chartStyles = () => ({
   chart: {
-    paddingRight: '20px'
+    paddingRight: 20
   }
 })
 

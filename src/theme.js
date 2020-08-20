@@ -63,12 +63,12 @@ let theme = createMuiTheme({
     },
     MuiInputBase: {
       root: {
-        color: '#FEBB46'
+        color: '#FF911E'
 
       },
       input: {
         '&::placeholder': {
-          color: '#FEBB46',
+          color: '#FF911E',
           opacity: 1
         }
       }
@@ -93,6 +93,9 @@ let theme = createMuiTheme({
     },
     blueGradient: {
       main: '-webkit-linear-gradient(#6774FF, #343A80)'
+    },
+    grey: {
+      main: '#707070'
     }
   }
 })
