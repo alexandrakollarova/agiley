@@ -36,10 +36,7 @@ const link = split(
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache(),
-  fetchOptions: {
-    mode: 'no-cors'
-  }
+  cache: new InMemoryCache()
 })
 
 ReactDOM.render(
