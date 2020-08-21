@@ -23,15 +23,10 @@ const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
-    //lazy: true,
-    //timeout: 60000,
+    lazy: true,
     timeout: 30000,
-    inactivityTimeout: 0
   }
 })
-
-wsLink.subscriptionClient.close(false)
-wsLink.subscriptionClient.connect()
 
 wsLink.subscriptionClient.on('connecting', () => {
   console.log('connecting')
