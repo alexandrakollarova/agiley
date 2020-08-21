@@ -23,8 +23,8 @@ const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
-    connectionCallback: error => console.log(error)
-  },
+    lazy: true
+  }
 })
 
 const link = split(
