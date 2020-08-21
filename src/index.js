@@ -22,8 +22,15 @@ const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
-    timeout: 30000
+    timeout: 30000,
+    minTimeout: 30000,
+    inactivityTimeout: 40000
   }
+})
+
+wsLink.subscriptionClient.on('error', (callback, ctx) => {
+  console.log('callback =>', callback)
+  console.log('ctx =>', ctx)
 })
 
 wsLink.subscriptionClient.on('connecting', () => {
