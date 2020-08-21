@@ -23,8 +23,8 @@ const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
-    lazy: true,
-    timeout: 60000
+    //lazy: true,
+    //timeout: 60000
   }
 })
 
