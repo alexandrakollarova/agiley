@@ -15,16 +15,14 @@ import './index.css'
 import config from './config'
 
 const httpLink = new HttpLink({
-  uri: `${config.API_ENDPOINT}/graphql`,
-  //credentials: 'include'
+  uri: `${config.API_ENDPOINT}/graphql`
 })
 
 const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
-    lazy: true,
-    timeout: 30000,
+    timeout: 30000
   }
 })
 
@@ -50,7 +48,6 @@ wsLink.subscriptionClient.on('disconnected', () => {
 
 wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
   wsLink.subscriptionClient.maxConnectTimeGenerator.max
-
 
 const link = split(
   ({ query }) => {
