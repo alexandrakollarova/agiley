@@ -24,7 +24,9 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     //lazy: true,
-    //timeout: 60000
+    //timeout: 60000,
+    timeout: 30000,
+    inactivityTimeout: 0
   }
 })
 
