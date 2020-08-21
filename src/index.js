@@ -33,9 +33,6 @@ const wsLink = new WebSocketLink({
 wsLink.subscriptionClient.close(false)
 wsLink.subscriptionClient.connect()
 
-wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
-  wsLink.subscriptionClient.maxConnectTimeGenerator.max
-
 wsLink.subscriptionClient.on('connecting', () => {
   console.log('connecting')
 })
@@ -55,6 +52,10 @@ wsLink.subscriptionClient.on('reconnected', () => {
 wsLink.subscriptionClient.on('disconnected', () => {
   console.log('disconnected')
 })
+
+wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
+  wsLink.subscriptionClient.maxConnectTimeGenerator.max
+
 
 const link = split(
   ({ query }) => {
