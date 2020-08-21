@@ -30,6 +30,8 @@ const wsLink = new WebSocketLink({
   }
 })
 
+wsLink.subscriptionClient.connect()
+
 wsLink.subscriptionClient.on('connecting', () => {
   console.log('connecting')
 })
