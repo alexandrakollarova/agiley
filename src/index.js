@@ -15,11 +15,11 @@ import './index.css'
 import config from './config'
 
 const httpLink = new HttpLink({
-  uri: `${config.API_ENDPOINT}/graphql`
+  uri: `${config.API_ENDPOINT}/graph`
 })
 
 const wsLink = new WebSocketLink({
-  uri: `wss://${config.API_ENDPOINT}/graphql`,
+  uri: `wss://${config.API_ENDPOINT}/graph`,
   options: {
     reconnect: true,
     timeout: 30000
