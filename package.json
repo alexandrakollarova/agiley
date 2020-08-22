@@ -24,6 +24,7 @@
     "graphql": "^15.2.0",
     "graphql-tag": "^2.11.0",
     "lodash": "^4.17.19",
+    "node-fetch": "^2.6.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dnd": "^11.1.3",

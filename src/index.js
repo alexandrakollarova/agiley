@@ -13,16 +13,17 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import theme from './theme'
 import './index.css'
 import config from './config'
+import fetch from 'node-fetch'
 
 const httpLink = new HttpLink({
-  uri: `https://${config.API_ENDPOINT}/graphql`
+  uri: `https://${config.API_ENDPOINT}/graphql`,
+  fetch
 })
 
 const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
-    reconnect: true,
-    //timeout: 30000
+    reconnect: true
   }
 })
 
