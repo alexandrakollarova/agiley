@@ -15,20 +15,15 @@ import './index.css'
 import config from './config'
 
 const httpLink = new HttpLink({
-  uri: `${config.API_ENDPOINT}/graph`
+  uri: `${config.API_ENDPOINT}/graphql`
 })
 
 const wsLink = new WebSocketLink({
-  uri: `wss://${config.API_ENDPOINT}/graph`,
+  uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
     timeout: 30000
   }
-})
-
-wsLink.subscriptionClient.on('error', (callback, ctx) => {
-  console.log('callback =>', callback)
-  console.log('ctx =>', ctx)
 })
 
 wsLink.subscriptionClient.on('connecting', () => {
@@ -54,8 +49,6 @@ wsLink.subscriptionClient.on('disconnected', () => {
 wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
   wsLink.subscriptionClient.maxConnectTimeGenerator.max
 
-console.log('WS LINK ==>', wsLink)
-console.log('HTTP LINK', httpLink)
 
 const link = split(
   ({ query }) => {
