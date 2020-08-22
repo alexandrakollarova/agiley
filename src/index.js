@@ -54,6 +54,9 @@ wsLink.subscriptionClient.on('disconnected', () => {
 wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>
   wsLink.subscriptionClient.maxConnectTimeGenerator.max
 
+console.log('WS LINK ==>', wsLink)
+console.log('HTTP LINK', httpLink)
+
 const link = split(
   ({ query }) => {
     const { kind, operation } = getMainDefinition(query)
