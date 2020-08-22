@@ -19,7 +19,8 @@ const httpLink = new HttpLink({
 })
 
 const wsLink = new WebSocketLink({
-  uri: `wss://${config.API_ENDPOINT}/graphql`,
+  //uri: `wss://${config.API_ENDPOINT}/graphql`,
+  uri: 'wss://obscure-ravine-70559.herokuapp.com/graphql',
   options: {
     reconnect: true,
     timeout: 30000
