@@ -15,19 +15,16 @@ import './index.css'
 import config from './config'
 
 const httpLink = new HttpLink({
-  uri: `${config.API_ENDPOINT}/graphql`
+  uri: `https://${config.API_ENDPOINT}/graphql`
 })
 
 const wsLink = new WebSocketLink({
-  //uri: `wss://${config.API_ENDPOINT}/graphql`,
-  uri: 'wss://obscure-ravine-70559.herokuapp.com/graphql',
+  uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
     timeout: 30000
   }
 })
-
-console.log('WS LINK ==>', wsLink)
 
 wsLink.subscriptionClient.on('connecting', () => {
   console.log('connecting')
