@@ -26,6 +26,8 @@ const wsLink = new WebSocketLink({
   }
 })
 
+console.log('WS LINK ==>', wsLink)
+
 wsLink.subscriptionClient.on('connecting', () => {
   console.log('connecting')
 })
