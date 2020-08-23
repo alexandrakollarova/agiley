@@ -16,8 +16,7 @@ import config from './config'
 import fetch from 'node-fetch'
 
 const httpLink = new HttpLink({
-  uri: `https://${config.API_ENDPOINT}/graphql`,
-  fetch
+  uri: `https://${config.API_ENDPOINT}/graphql`
 })
 
 const wsLink = new WebSocketLink({
