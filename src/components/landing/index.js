@@ -4,7 +4,8 @@ import LandingNav from './landing-nav'
 import {
   Typography,
   makeStyles,
-  Grid
+  Grid,
+  useMediaQuery
 } from '@material-ui/core'
 import workflow from '../../images/workflow.jpg'
 
@@ -12,7 +13,11 @@ const useStyles = makeStyles(theme => ({
   headline: {
     color: theme.palette.blue.main,
     fontWeight: 700,
-    float: 'right'
+    textAlign: 'center',
+    [theme.breakpoints.up(800)]: {
+      float: 'right',
+      textAlign: 'left'
+    }
   },
   h6: {
     color: 'white',
@@ -48,33 +53,71 @@ const useStyles = makeStyles(theme => ({
     zIndex: -1
   },
   bgImage: {
-    width: 650
+    width: '100%',
+    [theme.breakpoints.between(450, 800)]: {
+      width: 400
+    },
+    [theme.breakpoints.between(800, 1000)]: {
+      width: 500
+    },
+    [theme.breakpoints.up(1000)]: {
+      width: 600
+    }
   },
-  bgImageWrapper: {
-    width: 650,
+  wrapper: {
+    textAlign: 'center',
+    [theme.breakpoints.down(400)]: {
+      marginTop: theme.spacing(5)
+    },
+    [theme.breakpoints.between(400, 450)]: {
+      marginTop: theme.spacing(2)
+    }
   }
 }))
 
 export default function LandingPage() {
   const classes = useStyles()
+  const desktop = useMediaQuery('(min-width:800px)')
+
   return (
     <>
       <LandingNav />
-      <Grid
-        container
-        justify="center"
-        alignItems="center"
-      >
-        <Grid item xs={5}>
-          <Typography variant="h2" className={classes.headline}>
-            Track small
-            <br />to large scale
-            <br />projects.
-          </Typography>
-        </Grid>
-        <Grid item xs={7} className={classes.bgImageWrapper}>
-          <img src={workflow} alt="workflow" className={classes.bgImage} width={650} />
-        </Grid>
+      <Grid container alignItems='center'>
+        {desktop ?
+          (
+            <>
+              <Grid item xs={5}>
+                <Typography variant="h2" className={classes.headline}>
+                  Track small
+                  <br />to large scale
+                  <br />projects.
+                </Typography>
+              </Grid>
+              <Grid item xs={7}>
+                <img
+                  src={workflow}
+                  alt="workflow"
+                  className={classes.bgImage}
+                />
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={12} className={classes.wrapper}>
+                <Typography variant="h2" className={classes.headline}>
+                  Track small
+                  <br />to large scale
+                  <br />projects.
+                </Typography>
+                <img
+                  src={workflow}
+                  alt="workflow"
+                  className={classes.bgImage}
+                />
+              </Grid>
+            </>
+          )
+        }
       </Grid>
       <div className={classes.footerWrapper}>
         <Link to='/dashboard' className={classes.exploreBtn}>EXPLORE VISBO</Link>

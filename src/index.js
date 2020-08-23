@@ -13,7 +13,6 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import theme from './theme'
 import './index.css'
 import config from './config'
-import fetch from 'node-fetch'
 
 const httpLink = new HttpLink({
   uri: `https://${config.API_ENDPOINT}/graphql`
@@ -22,28 +21,9 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
   options: {
-    reconnect: true
+    reconnect: true,
+    timeout: 60000
   }
-})
-
-wsLink.subscriptionClient.on('connecting', () => {
-  console.log('connecting')
-})
-
-wsLink.subscriptionClient.on('connected', () => {
-  console.log('connected')
-})
-
-wsLink.subscriptionClient.on('reconnecting', () => {
-  console.log('reconnecting')
-})
-
-wsLink.subscriptionClient.on('reconnected', () => {
-  console.log('reconnected')
-})
-
-wsLink.subscriptionClient.on('disconnected', () => {
-  console.log('disconnected')
 })
 
 wsLink.subscriptionClient.maxConnectTimeGenerator.duration = () =>

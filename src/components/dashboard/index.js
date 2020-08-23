@@ -56,7 +56,6 @@ const GET_SECTIONS = gql`
 export default function Dashboard() {
   const classes = useStyles()
   const desktop = useMediaQuery('(min-width:1000px)')
-  const mobile = useMediaQuery('(min-width:450px)')
 
   // QUERIES
   const { loading: loadingSections, error: errorSections, data: dataSections } = useQuery(GET_SECTIONS)
