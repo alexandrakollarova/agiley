@@ -29,7 +29,9 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     marginLeft: 'auto',
     marginRight: 'auto',
-    zIndex: -1
+    zIndex: -1,
+    left: 0,
+    right: 0
   },
   sectionsContainer: {
     borderRadius: 10,
