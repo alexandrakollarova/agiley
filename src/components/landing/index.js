@@ -120,7 +120,7 @@ export default function LandingPage() {
         }
       </Grid>
       <div className={classes.footerWrapper}>
-        <Link to='/dashboard' className={classes.exploreBtn}>EXPLORE VISBO</Link>
+        <Link to='/dashboard' className={classes.exploreBtn}>EXPLORE AGILEY</Link>
         <Typography variant="h6" className={classes.h6}>Easy, flexible and free.</Typography>
       </div>
       <footer className={classes.footer} />
