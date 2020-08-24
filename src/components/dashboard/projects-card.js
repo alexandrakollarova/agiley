@@ -107,12 +107,7 @@ export default function ProjectsCard({ projects: incomingProjects }) {
   const [projects, setProjects] = useState(incomingProjects)
 
   // MUTATIONS
-  const [AddProject] = useMutation(ADD_PROJECT, {
-    // refetchQueries: [
-    //   { query: GET_PROJECTS },
-    //   { query: GET_SECTIONS }
-    // ]
-  })
+  const [AddProject, { data: addedProject }] = useMutation(ADD_PROJECT)
   const [AddInitialSections] = useMutation(ADD_INITIAL_SECTIONS)
 
   // SUBSCRPTIONS
@@ -131,14 +126,20 @@ export default function ProjectsCard({ projects: incomingProjects }) {
       AddProject({
         variables: {
           title: addProjectInputText
-        }
+        },
+        refetchQueries: [
+          { query: GET_PROJECTS },
+          { query: GET_SECTIONS }
+        ]
       }).then(res => {
+        console.log(res)
         AddInitialSections({
           variables: {
             projectId: res.data.insertProject.id
           }
         })
       })
+
       setAddProjectInputText('')
     }
   }

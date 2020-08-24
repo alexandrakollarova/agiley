@@ -36,7 +36,8 @@ const useStyles = makeStyles(theme => ({
   sectionsContainer: {
     borderRadius: 10,
     background: theme.palette.purple.main,
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    maxWidth: 'none'
   },
   input: {
     border: 'none',
@@ -215,7 +216,8 @@ export default function Project() {
               ? sections[sections.length - 1].pos + 16384
               : 16384,
           projectId: projectId
-        }
+        },
+        refetchQueries: [{ query: GET_SECTIONS_BY_PROJECT_ID, variables: { projectId } }]
       })
       setAddSectionInputText('')
     }
