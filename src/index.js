@@ -16,10 +16,12 @@ import config from './config'
 
 const httpLink = new HttpLink({
   uri: `https://${config.API_ENDPOINT}/graphql`
+  //uri: `http://${config.API_ENDPOINT}/graphql`
 })
 
 const wsLink = new WebSocketLink({
   uri: `wss://${config.API_ENDPOINT}/graphql`,
+  //uri: `ws://${config.API_ENDPOINT}/graphql`,
   options: {
     reconnect: true,
     timeout: 60000

@@ -107,7 +107,7 @@ export default function ProjectsCard({ projects: incomingProjects }) {
   const [projects, setProjects] = useState(incomingProjects)
 
   // MUTATIONS
-  const [AddProject, { data: addedProject }] = useMutation(ADD_PROJECT)
+  const [AddProject] = useMutation(ADD_PROJECT)
   const [AddInitialSections] = useMutation(ADD_INITIAL_SECTIONS)
 
   // SUBSCRPTIONS
@@ -119,7 +119,7 @@ export default function ProjectsCard({ projects: incomingProjects }) {
     }
   }, [projectAdded])
 
-  const onAddProjectSubmit = (e) => {
+  function onAddProjectSubmit(e) {
     e.preventDefault()
 
     if (addProjectInputText) {
@@ -127,12 +127,11 @@ export default function ProjectsCard({ projects: incomingProjects }) {
         variables: {
           title: addProjectInputText
         },
-        refetchQueries: [
-          { query: GET_PROJECTS },
-          { query: GET_SECTIONS }
-        ]
+        // refetchQueries: [
+        //   { query: GET_PROJECTS },
+        //   { query: GET_SECTIONS }
+        // ]
       }).then(res => {
-        console.log(res)
         AddInitialSections({
           variables: {
             projectId: res.data.insertProject.id
