@@ -127,10 +127,10 @@ export default function ProjectsCard({ projects: incomingProjects }) {
         variables: {
           title: addProjectInputText
         },
-        // refetchQueries: [
-        //   { query: GET_PROJECTS },
-        //   { query: GET_SECTIONS }
-        // ]
+        refetchQueries: [
+          { query: GET_PROJECTS },
+          { query: GET_SECTIONS }
+        ]
       }).then(res => {
         AddInitialSections({
           variables: {
